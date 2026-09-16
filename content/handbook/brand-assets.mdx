@@ -9,13 +9,13 @@ Everything Flagon makes is in the open, and the brand is no exception. The mark,
 
 ## The mark, canonically
 
-The source of truth for the mark is the `FlagonMark` component, not an exported image. It renders crisp at any size and follows the current theme, which is why the site never ships a blurry logo. When you need a static file, export from the component in the treatment you need:
+The source of truth for the mark is the `FlagonMark` component, which renders crisp at any size and follows the current theme. For anywhere that can't import the component, another app like the product at app.flagon.io, an email, a slide, there are self-contained SVG files hosted at stable URLs. The teal brew is baked in, and the glass outline uses `currentColor` with a light and dark default built in, so they read on any background even when dropped in with a plain `<img>` tag. Do not recreate the mark by hand; use these.
 
-- **Full** for screen, where a gradient and sheen are welcome.
-- **Flat** for print, embroidery, silkscreen, and anywhere a single spot colour is cleaner.
-- **Mono** for tiny or inline use, and anywhere the mark needs to take one ink from its surroundings.
+- **Static:** [`/brand/flagon-mark.svg`](/brand/flagon-mark.svg)
+- **Animated** (pours in, then a slow living wave; halts under reduced motion): [`/brand/flagon-mark-animated.svg`](/brand/flagon-mark-animated.svg)
+- **Mono** (single ink, for tinting to one colour): [`/brand/flagon-mark-mono.svg`](/brand/flagon-mark-mono.svg)
 
-See the [visual identity](/handbook/brand-visual-identity) page for all three side by side.
+Inline the SVG and set a `color` on it to recolour the outline yourself. See the [visual identity](/handbook/brand-visual-identity) page for the treatments side by side.
 
 ## Formats
 

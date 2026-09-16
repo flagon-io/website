@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="11.3 12.3 41 41" fill="none" role="img" aria-label="Flagon">
+  <!-- Self-contained animated Flagon mark: pours in once, then keeps a slow
+       living wave with a few rising bubbles. All motion is CSS embedded below,
+       so it runs standalone (even via <img>) and halts under
+       prefers-reduced-motion. Outline follows the viewer's light/dark theme. -->
+  <style>
+    :root { color: #0b0b0d; }
+    @media (prefers-color-scheme: dark) { :root { color: #ededed; } }
+    @keyframes flg-fill { from { transform: translateY(22px); } to { transform: translateY(0); } }
+    @keyframes flg-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(0.8px); } }
+    @keyframes flg-wave { from { transform: translateX(0); } to { transform: translateX(-30px); } }
+    @keyframes flg-wave-rev { from { transform: translateX(-30px); } to { transform: translateX(0); } }
+    @keyframes flg-bubble { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 0.55; } 100% { transform: translateY(-15px); opacity: 0; } }
+    .flg-rise { animation: flg-fill 1.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .flg-bob { animation: flg-bob 6s ease-in-out infinite; }
+    .flg-wave-back { animation: flg-wave 9s linear infinite; }
+    .flg-wave-front { animation: flg-wave-rev 6.5s linear infinite; }
+    .flg-bubble { animation: flg-bubble 5s ease-in infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .flg-rise, .flg-bob, .flg-wave-back, .flg-wave-front, .flg-bubble { animation: none !important; }
+      .flg-rise { transform: none; }
+    }
+  </style>
+  <defs>
+    <clipPath id="flagon-body">
+      <path d="M19.5 23 L34.5 23 L36.5 46 Q36.7 48 34.3 48 L19.7 48 Q17.3 48 17.5 46 Z" />
+    </clipPath>
+    <linearGradient id="flagon-brew" x1="0" y1="0.3" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8a6" />
+      <stop offset="1" stop-color="#0f766e" />
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#flagon-body)">
+    <g class="flg-rise">
+      <g class="flg-bob">
+        <path class="flg-wave-back" d="M-38 27 q7.5 -0.9 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 L97 60 L-38 60 Z" fill="url(#flagon-brew)" />
+        <path class="flg-wave-front" d="M-38 27.4 q7.5 0.9 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 L97 60 L-38 60 Z" fill="#2dd4bf" fill-opacity="0.3" />
+        <circle class="flg-bubble" cx="24" cy="46" r="0.9" fill="#d6fbf2" fill-opacity="0.7" style="animation-duration:5.2s;animation-delay:0.2s" />
+        <circle class="flg-bubble" cx="29" cy="46" r="0.7" fill="#d6fbf2" fill-opacity="0.7" style="animation-duration:6.6s;animation-delay:1.7s" />
+        <circle class="flg-bubble" cx="32" cy="46" r="1.0" fill="#d6fbf2" fill-opacity="0.7" style="animation-duration:4.6s;animation-delay:3s" />
+      </g>
+    </g>
+    <path d="M19.7 30 q-1.1 6 -0.4 12" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" fill="none" />
+  </g>
+  <path d="M37 27 L45.5 27 L48.5 30 L48.5 36.5 L45.5 39.5 L38 39.5" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M17.5 21 L36.5 21 L38.6 47 Q39 50 36 50 L18 50 Q15 50 15.4 47 Z" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linejoin="round" />
+  <path d="M17 21 Q16.3 16.3 20 15.6 L33 15.6 Q37.2 16.2 37 21 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+  <path d="M35.6 18 L39.3 16.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+  <circle cx="40.2" cy="15.9" r="1.5" fill="currentColor" />
+</svg>
