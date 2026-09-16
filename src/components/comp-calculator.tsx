@@ -159,9 +159,8 @@ export function CompCalculator({
       </div>
 
       <p className="border-t border-hairline bg-panel px-5 py-3 text-xs leading-relaxed text-subtle sm:px-6">
-        Seeded from PostHog&rsquo;s real, published compensation model as a
-        market-anchored starting point, not yet Flagon&rsquo;s finalized bands.
-        Same formula for every role, no negotiation.
+        Benchmarks are anchored to public market data as a starting point while we
+        finalize our own bands. Same formula for every role, no negotiation.
       </p>
     </div>
   );
