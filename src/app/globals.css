@@ -1,0 +1,446 @@
+@import "tailwindcss";
+
+/*
+ * Flagon brand + theme contract (self-contained).
+ *
+ * Canonical tokens follow shadcn's naming (--background, --primary, --border,
+ * --ring, --radius, …) so the vocabulary is portable; Flagon's brand values are
+ * mapped onto that contract, with brand-only extras (--brand, --brew-*, --foam*)
+ * added alongside. Dark mode is the `.dark` class on <html>, set by the no-flash
+ * ThemeScript (resolving "system" via prefers-color-scheme).
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Flagon brand extras (additive) */
+  --color-brand: var(--brand);
+  --color-brand-bright: var(--brand-bright);
+  --color-link: var(--link);
+  --color-subtle: var(--subtle);
+  --color-hairline: var(--hairline);
+  --color-panel: var(--panel);
+  --color-mark: var(--mark);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Display face for headlines (next/font sets --font-display to the real
+   * family name; this exposes it to Tailwind as `font-heading`). */
+  --font-heading: var(--font-display), var(--font-geist-sans), ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+/* ── Flagon theme · light (default) ─────────────────────── */
+:root {
+  --radius: 0.375rem;
+
+  --background: #fbfbfc;
+  --foreground: #0b0b0d;
+  --card: #ffffff;
+  --card-foreground: #0b0b0d;
+  --popover: #ffffff;
+  --popover-foreground: #0b0b0d;
+  --primary: #0d9488;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f5f6;
+  --secondary-foreground: #0b0b0d;
+  --muted: #f1f2f3;
+  --muted-foreground: #52525a;
+  --accent: #f1f2f3;
+  --accent-foreground: #0b0b0d;
+  --destructive: #e5484d;
+  --border: rgba(9, 9, 11, 0.12);
+  --input: rgba(9, 9, 11, 0.14);
+  --ring: #0d9488;
+
+  /* brand extras */
+  --brand: #0d9488;
+  --brand-bright: #0f766e;
+  /* AA-compliant teal for text links (brand teal itself is only ~3.6:1 on the
+   * light background; this darker teal clears 4.5:1). */
+  --link: #0f766e;
+  --subtle: #62626b;
+  --hairline: rgba(9, 9, 11, 0.12);
+  --panel: rgba(9, 9, 11, 0.028);
+  --mark: rgba(9, 9, 11, 0.18);
+
+  /* the mark: brew + glass */
+  --brew-top: #14b8a6;
+  --brew-bot: #0f766e;
+  --brew-flat: #0d9488;
+  --foam: #d3f6ee;
+  --foam-line: rgba(15, 118, 110, 0.4);
+  --sheen: rgba(255, 255, 255, 0.6);
+
+  /* shiki dual-theme code */
+  --shiki-light: #24292e;
+  --shiki-dark: #e1e4e8;
+}
+
+/* ── Flagon theme · dark (true black, hyperscale-style) ──── */
+.dark {
+  --background: #000000;
+  --foreground: #ededed;
+  --card: #0b0b0d;
+  --card-foreground: #ededed;
+  --popover: #0c0c0e;
+  --popover-foreground: #ededed;
+  --primary: #14b8a6;
+  --primary-foreground: #04140f;
+  --secondary: #18181b;
+  --secondary-foreground: #ededed;
+  --muted: #16161a;
+  --muted-foreground: #a7a7b0;
+  --accent: #1c1c20;
+  --accent-foreground: #ededed;
+  --destructive: #ef5350;
+  --border: rgba(255, 255, 255, 0.11);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #2dd4bf;
+
+  --brand: #14b8a6;
+  --brand-bright: #2dd4bf;
+  --link: #2dd4bf;
+  --subtle: #8b8b94;
+  --hairline: rgba(255, 255, 255, 0.11);
+  --panel: rgba(255, 255, 255, 0.03);
+  --mark: rgba(255, 255, 255, 0.15);
+
+  --brew-top: #2dd4bf;
+  --brew-bot: #0d9488;
+  --brew-flat: #14b8a6;
+  --foam: #d6fbf2;
+  --foam-line: rgba(204, 251, 241, 0.5);
+  --sheen: rgba(255, 255, 255, 0.35);
+}
+
+html {
+  background: var(--color-background);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Headlines wear the display face (Hanken Grotesk), tighter and a touch heavier
+ * than the Geist body. Element-level so every h1/h2/h3 inherits it without
+ * touching per-page utility classes; Tailwind's weight/size utilities still win.
+ */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+/* Big marketing headlines: pull tracking in further and firm up the weight so
+ * they read like the hyperscale.net display treatment. */
+h1 {
+  letter-spacing: -0.033em;
+  font-weight: 700;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 28%, transparent);
+  color: var(--foreground);
+}
+
+/* Anything clickable gets the hand. Native buttons default to the arrow cursor,
+ * which makes Radix triggers (nav dropdowns, theme toggle) feel inert on hover. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary,
+label[for] {
+  cursor: pointer;
+}
+
+/* Themed, subtle scrollbars that follow light/dark. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+  background-clip: padding-box;
+}
+
+/* ── Brand motion ───────────────────────────────────────── */
+
+/* Hex lattice (HexField): the mesh holds, the light travels through it. */
+@keyframes hex-cell-pulse {
+  0%, 88%, 100% { stroke-opacity: 0.16; }
+  92% { stroke-opacity: 0.48; }
+}
+@keyframes hex-node-breathe {
+  0%, 100% { stroke-opacity: 0.32; fill-opacity: 0.06; }
+  50% { stroke-opacity: 0.7; fill-opacity: 0.16; }
+}
+@media (min-width: 1024px) {
+  .hex-cell { animation: hex-cell-pulse 7s linear infinite; }
+  .hex-node { animation: hex-node-breathe 6s ease-in-out infinite; }
+}
+
+/* The mark pouring (FlagonMark animated). Transforms only. */
+@keyframes pour-fill { from { transform: translateY(22px); } to { transform: translateY(0); } }
+@keyframes pour-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(0.8px); } }
+@keyframes pour-wave { from { transform: translateX(0); } to { transform: translateX(-30px); } }
+@keyframes pour-wave-rev { from { transform: translateX(-30px); } to { transform: translateX(0); } }
+@keyframes pour-bubble {
+  0% { transform: translateY(0); opacity: 0; }
+  25% { opacity: 0.55; }
+  100% { transform: translateY(-15px); opacity: 0; }
+}
+.pour-rise { animation: pour-fill 1.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.pour-bob { animation: pour-bob 6s ease-in-out infinite; }
+.pour-wave-back { animation: pour-wave 9s linear infinite; }
+.pour-wave-front { animation: pour-wave-rev 6.5s linear infinite; }
+.pour-bubble { animation: pour-bubble 5s ease-in infinite; }
+
+/* Entrance + status pulse. */
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.rise { opacity: 0; animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.7; }
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+.ping-slow { animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .ping-slow, .hex-cell, .hex-node,
+  .pour-rise, .pour-bob, .pour-wave-back, .pour-wave-front, .pour-bubble {
+    animation: none !important;
+  }
+  .rise { opacity: 1; transform: none; }
+}
+
+/* ── Long-form prose (handbook + blog MDX) ──────────────── */
+.prose {
+  color: var(--color-foreground);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.prose > * + * { margin-top: 1.25rem; }
+.prose h2 {
+  scroll-margin-top: 6rem;
+  margin-top: 3rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.prose h3 {
+  scroll-margin-top: 6rem;
+  margin-top: 2rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.prose h2 + *, .prose h3 + * { margin-top: 0.5rem; }
+.prose p { color: var(--color-muted-foreground); }
+.prose strong { color: var(--color-foreground); font-weight: 600; }
+.prose a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.prose a:hover { text-decoration-thickness: 2px; }
+/* Auto-linked headings must look like headings, not links. */
+.prose :is(h2, h3) a {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+.prose :is(h2, h3) a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.prose ul { list-style: disc; margin-left: 1.25rem; color: var(--color-muted-foreground); }
+.prose ol { list-style: decimal; margin-left: 1.25rem; color: var(--color-muted-foreground); }
+.prose li { margin-top: 0.5rem; }
+.prose li > ul, .prose li > ol { margin-top: 0.5rem; }
+.prose blockquote {
+  border-left: 2px solid var(--color-brand);
+  padding-left: 1rem;
+  color: var(--color-muted-foreground);
+  font-style: italic;
+}
+.prose hr { border: none; border-top: 1px solid var(--color-hairline); margin: 2.5rem 0; }
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-panel);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+}
+.prose pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  padding: 1rem 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+.prose img { border-radius: var(--radius-lg); border: 1px solid var(--color-hairline); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
+.prose th, .prose td { border: 1px solid var(--color-hairline); padding: 0.5rem 0.75rem; text-align: left; }
+.prose th { background: var(--color-panel); font-weight: 600; }
+
+/* ── Handbook sidebar accordion (Radix) ─────────────────── */
+@keyframes acc-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes acc-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+.acc-content[data-state="open"] { animation: acc-down 180ms ease-out; }
+.acc-content[data-state="closed"] { animation: acc-up 150ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .acc-content { animation: none !important; }
+}
+
+/* ── Command palette (cmdk site search) ─────────────────── */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, #000 55%, transparent);
+  backdrop-filter: blur(4px);
+}
+[cmdk-dialog] {
+  position: fixed;
+  z-index: 61;
+  left: 50%;
+  top: 14vh;
+  transform: translateX(-50%);
+  width: min(92vw, 40rem);
+}
+[cmdk-root] {
+  overflow: hidden;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-xl);
+  background: var(--color-popover);
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.55);
+}
+[cmdk-input] {
+  width: 100%;
+  padding: 1rem 1.15rem;
+  font-size: 0.95rem;
+  color: var(--color-foreground);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-hairline);
+  outline: none;
+}
+[cmdk-input]::placeholder {
+  color: var(--color-subtle);
+}
+[cmdk-list] {
+  max-height: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.5rem;
+  scroll-padding-block: 0.5rem;
+}
+[cmdk-group-heading] {
+  padding: 0.6rem 0.65rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-subtle);
+}
+[cmdk-item] {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  user-select: none;
+}
+[cmdk-item] svg {
+  color: var(--color-subtle);
+  flex: none;
+}
+[cmdk-item][data-selected="true"] {
+  background: var(--color-panel);
+  color: var(--color-foreground);
+}
+[cmdk-item][data-selected="true"] svg {
+  color: var(--color-brand);
+}
+[cmdk-empty] {
+  padding: 2.25rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-subtle);
+}
+
+/* Shiki dual-theme code highlighting inside prose. */
+.prose pre[data-theme],
+.prose code[data-theme],
+.prose pre[data-theme] span,
+.prose code[data-theme] span {
+  color: var(--shiki-light);
+  background-color: transparent !important;
+}
+.dark .prose pre[data-theme],
+.dark .prose code[data-theme],
+.dark .prose pre[data-theme] span,
+.dark .prose code[data-theme] span {
+  color: var(--shiki-dark);
+}
