@@ -10,7 +10,7 @@ can read, edit, and send a pull request against.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run dev      # http://localhost:3001
 ```
 
 Node 24 (see [`.nvmrc`](.nvmrc) and the `engines` field in `package.json`).

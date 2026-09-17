@@ -54,7 +54,7 @@ const SECTIONS: { name: string; category: string | null; soon?: boolean }[] = [
   { name: "Growth", category: "Resources", soon: true },
   { name: "Marketing", category: "Resources", soon: true },
   { name: "Operations", category: "Resources", soon: true },
-  { name: "Product", category: "Resources", soon: true },
+  { name: "Product", category: "Resources" },
   { name: "Support", category: "Resources", soon: true },
 ];
 

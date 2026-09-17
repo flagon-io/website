@@ -276,10 +276,10 @@ export default function PricingPage() {
           </Schematic>
           <div className={`mt-6 ${GUTTER}`}>
             <Link
-              href="/handbook/how-we-make-money"
+              href="/handbook/priced-below-cost"
               className="text-sm font-medium text-link underline underline-offset-2"
             >
-              Read the full money philosophy in the handbook
+              Why our prices are what they are, in the handbook
             </Link>
           </div>
         </Section>
