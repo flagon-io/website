@@ -14,6 +14,8 @@ export type HandbookPage = {
 export type HandbookSection = {
   name: string;
   pages: HandbookPage[];
+  /** A department we'll build out later: shown disabled with a "Soon" pill. */
+  soon?: boolean;
 };
 
 /**
@@ -33,18 +35,27 @@ export type HandbookCategory = {
  * `section:` must match one of these names to be placed; anything else falls to
  * the end as its own top-level section.
  */
-const SECTIONS: { name: string; category: string | null }[] = [
-  { name: "Start here", category: null },
+const SECTIONS: { name: string; category: string | null; soon?: boolean }[] = [
   { name: "Chapters", category: null },
   // Working here: how the company operates, day to day.
   { name: "How we work", category: "Working here" },
+  { name: "Tools & processes", category: "Working here" },
   { name: "People ops", category: "Working here" },
   { name: "Pay & perks", category: "Working here" },
   { name: "Hiring", category: "Working here" },
-  // Resources: the departmental guides. Each function gets its own sub-section
-  // as it grows real content; today that's Engineering (the craft) and Brand.
-  { name: "Engineering", category: "Resources" },
+  // Resources: departmental guides, alphabetical. `soon` renders a disabled
+  // placeholder with a "Soon" pill for a department we'll build out later.
   { name: "Brand", category: "Resources" },
+  { name: "Community", category: "Resources", soon: true },
+  { name: "Content", category: "Resources", soon: true },
+  { name: "Design", category: "Resources", soon: true },
+  { name: "Developer relations", category: "Resources", soon: true },
+  { name: "Engineering", category: "Resources" },
+  { name: "Growth", category: "Resources", soon: true },
+  { name: "Marketing", category: "Resources", soon: true },
+  { name: "Operations", category: "Resources", soon: true },
+  { name: "Product", category: "Resources", soon: true },
+  { name: "Support", category: "Resources", soon: true },
 ];
 
 const SECTION_ORDER = SECTIONS.map((s) => s.name);
@@ -96,15 +107,31 @@ export function getHandbookSections(): HandbookSection[] {
   }));
 }
 
-/** Sections grouped under their categories, in order, for the two-level sidebar. */
+/**
+ * Sections grouped under their categories, in order, for the two-level sidebar.
+ * Includes `soon` placeholder sections (declared in SECTIONS, no pages yet) so
+ * the departments we plan to build show up disabled with a "Soon" pill.
+ */
 export function getHandbookNav(): HandbookCategory[] {
-  const categoryOf = new Map(SECTIONS.map((s) => [s.name, s.category]));
+  const withPages = new Map(getHandbookSections().map((s) => [s.name, s]));
+  const seen = new Set<string>();
   const cats: HandbookCategory[] = [];
-  for (const section of getHandbookSections()) {
-    const category = categoryOf.get(section.name) ?? null;
+  const add = (category: string | null, section: HandbookSection) => {
     const last = cats[cats.length - 1];
     if (last && last.name === category) last.sections.push(section);
     else cats.push({ name: category, sections: [section] });
+  };
+
+  for (const def of SECTIONS) {
+    seen.add(def.name);
+    const populated = withPages.get(def.name);
+    if (populated) add(def.category, populated);
+    else if (def.soon) add(def.category, { name: def.name, pages: [], soon: true });
+    // a known section with no pages and no `soon` flag is simply omitted
+  }
+  // Any section that has pages but isn't declared in SECTIONS: append at the end.
+  for (const s of getHandbookSections()) {
+    if (!seen.has(s.name)) add(null, s);
   }
   return cats;
 }

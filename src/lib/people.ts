@@ -22,9 +22,9 @@ export type Person = {
 export const PEOPLE: Person[] = [
   {
     name: "Chase Pierce",
-    role: "Founder",
+    role: "Founder & everything else, for now",
     location: "Remote",
-    team: "Engineering",
+    team: "Leadership",
     photo: "/people/chase-pierce.jpg",
     founder: true,
     bio: "Started Flagon to build the company he always wanted to work for: open by default, honest about how it works, and here for the long game.",

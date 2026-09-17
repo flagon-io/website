@@ -67,7 +67,7 @@ export default function Home() {
             />
             <Pillar
               title="A crew of misfits"
-              body="We're not assembling a machine. We're a small group of people who care about craft, allergic to theatre, and happier shipping one genuinely good thing than ten that are fine."
+              body="We're not assembling a machine. We're a small group of people who care about craft, allergic to pretense, and happier shipping one genuinely good thing than ten that are fine."
             />
             <Pillar
               title="The long game"

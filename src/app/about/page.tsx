@@ -71,7 +71,7 @@ export default function AboutPage() {
               Fair warning: if you like the way most companies treat you, you might
               not like us. We&rsquo;re building the company we&rsquo;ve always wanted
               to work for, which means quietly rejecting a pile of things that
-              somehow became normal. No theatre, no fog, no growth tricks that only
+              somehow became normal. No spin, no fog, no growth tricks that only
               work because you weren&rsquo;t paying attention.
             </p>
             <p>
@@ -167,7 +167,7 @@ export default function AboutPage() {
               We&rsquo;re small and early, and we&rsquo;re not going to pretend
               otherwise. But the direction is fixed, and it won&rsquo;t change with
               the fundraising weather: build good things, in the open, for the long
-              haul. Read <Link href="/handbook/the-long-game">the long game</Link>{" "}
+              haul. Read <Link href="/handbook/values#the-long-game">the long game</Link>{" "}
               for the full version.
             </p>
           </Narrative>
@@ -213,9 +213,8 @@ export default function AboutPage() {
             <p className="max-w-2xl text-pretty text-xl font-medium leading-relaxed tracking-tight sm:text-2xl">
               We make software, and we&rsquo;re building the company we always
               wanted to work for: open, honest, priced without games, and here for
-              the long haul. If we haven&rsquo;t convinced you yet, come back in a
-              few months. There&rsquo;ll be more to read, and eventually, something
-              to use.
+              the long haul. If we haven&rsquo;t convinced you yet, read the handbook,
+              follow the blog, and come try what we make.
             </p>
           </div>
         </Section>

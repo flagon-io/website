@@ -57,6 +57,28 @@ export function MarkSizes() {
   );
 }
 
+/** The mark held still vs. pouring, so the motion reads as part of the identity. */
+export function MarkMotion() {
+  return (
+    <Schematic bleed className="not-prose my-8">
+      <SchematicGrid cols={2}>
+        <div className="flex flex-col items-center gap-4 p-8 sm:p-10">
+          <FlagonMark size={84} className="text-foreground" />
+          <span className="font-mono text-[10px] uppercase tracking-widest text-subtle">
+            Held
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-4 p-8 sm:p-10">
+          <FlagonMark size={84} animated className="text-foreground" />
+          <span className="font-mono text-[10px] uppercase tracking-widest text-subtle">
+            In motion
+          </span>
+        </div>
+      </SchematicGrid>
+    </Schematic>
+  );
+}
+
 /** The full brand palette as swatches. */
 export function Palette() {
   return (
@@ -75,35 +97,38 @@ export function Palette() {
   );
 }
 
-/** Type specimen: Geist Sans and Geist Mono, plus the display face. */
+/** Type specimen: Hanken Grotesk headlines, Geist body, JetBrains Mono code. */
 export function TypeSpecimen() {
   return (
     <Schematic bleed className="not-prose my-8">
       <SchematicGrid cols={2}>
         <div className="p-6 sm:p-8">
           <div className="font-mono text-[10px] uppercase tracking-widest text-subtle">
-            Hanken Grotesk · display
+            Hanken Grotesk · headlines
           </div>
           <div className="mt-4 font-heading text-5xl font-bold tracking-[-0.033em] text-foreground">
             Ag
           </div>
-          <div className="mt-4 font-heading text-2xl font-semibold tracking-tight text-foreground">
+          <div className="mt-3 font-heading text-2xl font-semibold tracking-tight text-foreground">
             Good software, on tap.
           </div>
-          <div className="mt-3 leading-relaxed text-muted-foreground">
-            Headlines only. Tight, a touch heavier than the body.
+          <div className="mt-6 font-mono text-[10px] uppercase tracking-widest text-subtle">
+            Geist · body &amp; UI
+          </div>
+          <div className="mt-2 leading-relaxed text-muted-foreground">
+            The quick brown fox jumps over the lazy dog. 0123456789
           </div>
         </div>
         <div className="p-6 sm:p-8">
           <div className="font-mono text-[10px] uppercase tracking-widest text-subtle">
-            Geist Sans · body
+            JetBrains Mono · code &amp; labels
           </div>
-          <div className="mt-4 text-5xl font-semibold tracking-tight text-foreground">Ag</div>
-          <div className="mt-4 leading-relaxed text-muted-foreground">
-            The quick brown fox jumps over the lazy dog. 0123456789
+          <div className="mt-4 font-mono text-5xl font-medium tracking-tight text-foreground">Ag</div>
+          <div className="mt-4 font-mono text-sm leading-relaxed text-muted-foreground">
+            const flagon = &quot;on tap&quot;; // 0123456789
           </div>
           <div className="mt-3 font-mono text-sm uppercase tracking-widest text-muted-foreground">
-            Geist Mono · {site.domain}
+            Building in public · {site.domain}
           </div>
         </div>
       </SchematicGrid>

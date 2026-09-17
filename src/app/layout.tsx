@@ -1,20 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Hanken_Grotesk } from "next/font/google";
+import { Geist, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { site } from "@/lib/site";
 import { ThemeScript } from "@/components/theme-script";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-// Display face for headlines. Geist stays the body/UI font; this grotesque gives
-// headings a tighter, more distinct voice (the hyperscale.net feel).
+// Three roles, kept clean: Geist is the neutral body/UI workhorse, Hanken
+// Grotesk gives headlines a tighter, more distinct voice, and JetBrains Mono
+// carries code and labels as its own separate thing.
+const bodyFont = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const displayFont = Hanken_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
 });
+const mono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -62,12 +63,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${displayFont.variable} h-full antialiased`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${mono.variable} h-full antialiased`}
     >
       <head>
         <ThemeScript />
       </head>
-      <body className="flex min-h-dvh flex-col overflow-x-hidden">
+      <body className="flex min-h-dvh flex-col overflow-x-clip">
         {children}
         <Analytics />
         <SpeedInsights />

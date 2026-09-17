@@ -17,6 +17,7 @@ export default function HandbookLayout({ children }: { children: ReactNode }) {
     name: c.name,
     sections: c.sections.map((s) => ({
       name: s.name,
+      soon: s.soon,
       pages: s.pages.map((p) => ({ slug: p.slug, title: p.title })),
     })),
   }));
@@ -34,9 +35,9 @@ export default function HandbookLayout({ children }: { children: ReactNode }) {
       <SiteHeader />
 
       <div className="mx-auto w-full max-w-7xl border-x border-hairline lg:flex lg:h-[calc(100dvh-4rem)] lg:flex-col lg:overflow-hidden">
-        <div className="grid grid-cols-1 lg:min-h-0 lg:flex-1 lg:grid-cols-[240px_minmax(0,1fr)] lg:overflow-hidden">
+        <div className="grid grid-cols-1 lg:min-h-0 lg:flex-1 lg:grid-cols-[276px_minmax(0,1fr)] lg:overflow-hidden">
           {/* Left rail: own scroll on desktop; stacked above content on mobile. */}
-          <aside className="border-b border-hairline py-4 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:py-6">
+          <aside className="border-b border-hairline py-4 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:pb-6 lg:pt-0">
             <HandbookSidebar categories={categories} />
           </aside>
 

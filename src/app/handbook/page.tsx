@@ -40,12 +40,15 @@ export default function HandbookIndex() {
       </div>
 
       <div className="mt-14 flex flex-col gap-14">
-        {categories.map((category) => (
+        {categories.map((category) => {
+          const sections = category.sections.filter((s) => s.pages.length > 0);
+          if (sections.length === 0) return null;
+          return (
           <div key={category.name ?? "_top"} className="flex flex-col gap-10">
             {category.name ? (
               <h2 className="text-2xl font-semibold tracking-tight">{category.name}</h2>
             ) : null}
-            {category.sections.map((section) => {
+            {sections.map((section) => {
               const numbered = section.name === "Chapters";
               return (
                 <section key={section.name}>
@@ -92,7 +95,8 @@ export default function HandbookIndex() {
               );
             })}
           </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );

@@ -43,7 +43,7 @@ export default function CareersPage() {
         <Section divider>
           <SectionHeader
             title="A place built for people who care about the work"
-            lead="No theatre, no busywork, no curtain. Here's what you'd actually be signing up for."
+            lead="No games, no busywork, nothing hidden. Here's what you'd actually be signing up for."
           />
           <Schematic bleed className="mt-10">
             <SchematicGrid cols={3}>

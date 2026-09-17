@@ -10,6 +10,7 @@ import { CompCalculator } from "@/components/comp-calculator";
 import {
   MarkTreatments,
   MarkSizes,
+  MarkMotion,
   Palette,
   TypeSpecimen,
   MarkUsage,
@@ -62,6 +63,7 @@ const components = {
   CompCalculator,
   MarkTreatments,
   MarkSizes,
+  MarkMotion,
   Palette,
   TypeSpecimen,
   MarkUsage,

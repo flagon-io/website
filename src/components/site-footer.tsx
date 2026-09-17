@@ -9,9 +9,10 @@ export function SiteFooter() {
 
   return (
     <footer className="relative border-t border-hairline bg-background/70 backdrop-blur-md">
-      {/* divider-end marks */}
-      <Plus className="absolute left-0 top-0 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-mark" />
-      <Plus className="absolute right-0 top-0 h-3.5 w-3.5 translate-x-1/2 -translate-y-1/2 text-mark" />
+      {/* divider-end marks; only shown once the column has outer margin (xl),
+          so they never straddle the viewport edge on smaller screens */}
+      <Plus className="absolute left-0 top-0 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-mark xl:block" />
+      <Plus className="absolute right-0 top-0 hidden h-3.5 w-3.5 translate-x-1/2 -translate-y-1/2 text-mark xl:block" />
 
       <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-8 px-6 py-12 sm:grid-cols-4">
         {/* brand */}

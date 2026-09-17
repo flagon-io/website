@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { Cta } from "@/components/cta";
 import { site, isNavGroup } from "@/lib/site";
 
 /**
@@ -32,6 +33,11 @@ export function MobileNav() {
     if (!open) return;
     panelRef.current?.querySelector<HTMLElement>("a, button")?.focus();
 
+    // Lock the page behind the menu so it doesn't scroll under the overlay.
+    const root = document.documentElement;
+    const prev = root.style.overflow;
+    root.style.overflow = "hidden";
+
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setOpen(false);
@@ -49,6 +55,7 @@ export function MobileNav() {
     return () => {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onClick);
+      root.style.overflow = prev;
     };
   }, [open]);
 
@@ -74,12 +81,17 @@ export function MobileNav() {
         id={panelId}
         ref={panelRef}
         hidden={!open}
-        className="absolute inset-x-0 top-full border-b border-hairline bg-background/95 backdrop-blur-md"
+        className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-b border-hairline bg-background shadow-xl shadow-black/30"
       >
         <nav
           aria-label="Mobile"
           className="mx-auto flex w-full max-w-7xl flex-col gap-0.5 px-6 py-4"
         >
+          <div className="mb-3 border-b border-hairline pb-4">
+            <Cta href={site.links.signup} external className="w-full justify-center">
+              Get started
+            </Cta>
+          </div>
           {site.nav.map((item) => {
             if (isNavGroup(item)) {
               return (

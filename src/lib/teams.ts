@@ -8,6 +8,10 @@
  */
 export const TEAMS = [
   {
+    name: "Leadership",
+    blurb: "Sets direction, holds the quality bar, and clears the path. A role, not a rank, and for now all the founder.",
+  },
+  {
     name: "Engineering",
     blurb: "Builds and runs the platform, and keeps it fast, safe, and boring in the good way.",
   },

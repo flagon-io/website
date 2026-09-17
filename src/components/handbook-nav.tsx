@@ -7,7 +7,11 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-type NavSection = { name: string; pages: { slug: string; title: string }[] };
+type NavSection = {
+  name: string;
+  pages: { slug: string; title: string }[];
+  soon?: boolean;
+};
 
 /** Two-level structure: top-level categories, each holding collapsible sections. */
 export type HandbookNavData = {
@@ -46,21 +50,25 @@ export function HandbookNav({ categories }: { categories: HandbookNavData }) {
 
   return (
     <nav className="text-[13px]">
-      <p className="px-4 pb-1 pt-1 text-[13px] font-semibold tracking-tight text-foreground">
+      {/* Masthead: a header band, matching the category bands, so the Table of
+          contents link below reads as its item. */}
+      <p className="border-b border-hairline bg-panel px-4 py-2.5 text-[13px] font-semibold tracking-tight text-foreground">
         The Book of Flagon
       </p>
-      <Link
-        href="/handbook"
-        aria-current={pathname === "/handbook" ? "page" : undefined}
-        className={cn(
-          "flex px-4 py-2.5 font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand",
-          pathname === "/handbook"
-            ? "text-brand"
-            : "text-muted-foreground hover:bg-panel hover:text-foreground",
-        )}
-      >
-        Table of contents
-      </Link>
+      <div className="px-2 py-2">
+        <Link
+          href="/handbook"
+          aria-current={pathname === "/handbook" ? "page" : undefined}
+          className={cn(
+            "block rounded-md px-2.5 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand",
+            pathname === "/handbook"
+              ? "bg-foreground/10 font-medium text-foreground"
+              : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+          )}
+        >
+          Table of contents
+        </Link>
+      </div>
 
       <Accordion.Root
         type="multiple"
@@ -71,22 +79,42 @@ export function HandbookNav({ categories }: { categories: HandbookNavData }) {
         {categories.map((category) => (
           <div key={category.name ?? "_top"}>
             {category.name ? (
-              <p className="border-b border-hairline bg-panel/30 px-4 pb-1.5 pt-4 font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-subtle">
+              <p className="border-b border-hairline bg-panel px-4 py-2.5 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-subtle">
                 {category.name}
               </p>
             ) : null}
-            {category.sections.map((section) => (
-              <SectionItem
-                key={section.name}
-                section={section}
-                pathname={pathname}
-                indented={category.name !== null}
-              />
-            ))}
+            {category.sections.map((section) =>
+              section.soon ? (
+                <SoonRow key={section.name} name={section.name} />
+              ) : (
+                <SectionItem
+                  key={section.name}
+                  section={section}
+                  pathname={pathname}
+                  indented={category.name !== null}
+                />
+              ),
+            )}
           </div>
         ))}
       </Accordion.Root>
     </nav>
+  );
+}
+
+/** A department we haven't written yet: a disabled row with a "Soon" pill. */
+function SoonRow({ name }: { name: string }) {
+  return (
+    <div
+      aria-disabled
+      className="flex items-center gap-2 border-b border-hairline py-2.5 pl-6 pr-4 font-mono text-[11px] uppercase tracking-widest text-subtle/60"
+    >
+      <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-40" strokeWidth={2} aria-hidden />
+      <span className="flex-1 text-left">{name}</span>
+      <span className="rounded-full border border-hairline px-1.5 py-px text-[9px] leading-tight tracking-widest text-subtle">
+        Soon
+      </span>
+    </div>
   );
 }
 
@@ -106,6 +134,10 @@ function SectionItem({
         <Accordion.Trigger
           className={cn(
             "group flex w-full items-center gap-2 py-2.5 pr-4 font-mono text-[11px] uppercase tracking-widest text-subtle outline-none transition-colors hover:bg-panel hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand data-[state=open]:text-foreground",
+            // Divider under the header only when open, separating it from its
+            // page list. Closed, the Accordion.Item's own border-b handles it,
+            // so this never double-stacks.
+            "data-[state=open]:border-b data-[state=open]:border-hairline",
             indented ? "pl-6" : "pl-4",
           )}
         >
@@ -118,7 +150,7 @@ function SectionItem({
         </Accordion.Trigger>
       </Accordion.Header>
       <Accordion.Content className="acc-content overflow-hidden">
-        <ul className="flex flex-col pb-2">
+        <ul className="flex flex-col gap-0.5 px-2 pb-2 pt-1.5">
           {section.pages.map((page, i) => {
             const href = `/handbook/${page.slug}`;
             const active = pathname === href;
@@ -128,20 +160,20 @@ function SectionItem({
                   href={href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex items-baseline gap-2 border-l-2 py-2 pr-4 leading-snug outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand",
-                    // Numbered rows reserve a number column, so they can start
-                    // flush; unnumbered rows skip it and sit much closer in.
-                    numbered ? "pl-4" : indented ? "pl-7" : "pl-5",
+                    "flex items-baseline gap-2 rounded-md py-2 pr-2.5 leading-snug outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand",
+                    numbered ? "pl-2" : indented ? "pl-5" : "pl-3",
+                    // Vercel-style active: a clean neutral fill on an inset,
+                    // rounded row, no coloured rail; text goes to full contrast.
                     active
-                      ? "border-brand bg-panel font-medium text-foreground"
-                      : "border-transparent text-muted-foreground hover:bg-panel hover:text-foreground",
+                      ? "bg-foreground/10 font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
                   )}
                 >
                   {numbered ? (
                     <span
                       className={cn(
                         "w-5 shrink-0 font-mono text-[10px] tabular-nums",
-                        active ? "text-brand" : "text-subtle",
+                        active ? "text-foreground/70" : "text-subtle",
                       )}
                     >
                       {String(i + 1).padStart(2, "0")}

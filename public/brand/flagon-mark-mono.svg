@@ -17,6 +17,6 @@
   <path d="M37 27 L45.5 27 L48.5 30 L48.5 36.5 L45.5 39.5 L38 39.5" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round" />
   <path d="M17.5 21 L36.5 21 L38.6 47 Q39 50 36 50 L18 50 Q15 50 15.4 47 Z" fill="none" stroke="currentColor" stroke-width="3.1" stroke-linejoin="round" />
   <path d="M17 21 Q16.3 16.3 20 15.6 L33 15.6 Q37.2 16.2 37 21 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
-  <path d="M35.6 18 L39.3 16.2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-  <circle cx="40.2" cy="15.9" r="1.5" fill="currentColor" />
+  <path d="M36.7 17.1 L39.4 16.1" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+  <circle cx="40.3" cy="15.8" r="1.4" fill="currentColor" />
 </svg>

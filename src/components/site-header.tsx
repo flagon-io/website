@@ -35,9 +35,11 @@ export function SiteHeader() {
           <MobileNav />
         </div>
 
-        {/* crosshair marks where the header divider meets the column rails */}
-        <Plus className="absolute bottom-0 left-0 h-3.5 w-3.5 -translate-x-1/2 translate-y-1/2 text-mark" />
-        <Plus className="absolute bottom-0 right-0 h-3.5 w-3.5 translate-x-1/2 translate-y-1/2 text-mark" />
+        {/* crosshair marks where the header divider meets the column rails;
+            only shown once the column has outer margin (xl), so they never
+            straddle the viewport edge and force horizontal scroll on mobile */}
+        <Plus className="absolute bottom-0 left-0 hidden h-3.5 w-3.5 -translate-x-1/2 translate-y-1/2 text-mark xl:block" />
+        <Plus className="absolute bottom-0 right-0 hidden h-3.5 w-3.5 translate-x-1/2 translate-y-1/2 text-mark xl:block" />
       </div>
     </header>
   );

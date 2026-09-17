@@ -113,7 +113,7 @@ export default function ProductsPage() {
         <Section divider className="text-center">
           <div className="px-6 sm:px-8">
             <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-              Watch it come together
+              See what&rsquo;s next
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-pretty text-muted-foreground">
               We build in the open. See where the platform is on the roadmap, or

@@ -183,8 +183,11 @@ export function FlagonMark({
       )}
       {lid && lever && (
         <>
-          <path d="M35.6 18 L39.3 16.2" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
-          <circle cx={40.2} cy={15.9} r={1.5} fill="currentColor" />
+          {/* Thumb-lever: a short arm from the lid's top-right edge to a round
+              knob. Butt cap (not round) so it doesn't leave a half-circle blob
+              bleeding back into the lid; the knob covers the far end. */}
+          <path d="M36.7 17.1 L39.4 16.1" stroke="currentColor" strokeWidth={2.4} strokeLinejoin="round" />
+          <circle cx={40.3} cy={15.8} r={1.4} fill="currentColor" />
         </>
       )}
     </svg>
