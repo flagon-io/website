@@ -44,7 +44,7 @@ export function MainNav({ className }: { className?: string }) {
                   />
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content className="absolute left-0 top-full z-30 pt-2.5">
-                  <div className="min-w-52 rounded-xl border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10">
+                  <div className="min-w-52 rounded-lg border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10">
                     {item.sections.map((section, si) => (
                       <div
                         key={si}
@@ -95,7 +95,7 @@ function DropdownLink({
   const Icon = link.icon;
   const current = !link.external && active(link.href);
   const cls = cn(
-    "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm outline-none transition-colors hover:bg-panel hover:text-foreground focus-visible:bg-panel focus-visible:text-foreground",
+    "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm outline-none transition-colors hover:bg-panel hover:text-foreground focus-visible:bg-panel focus-visible:text-foreground",
     current ? "font-medium text-foreground" : "text-muted-foreground",
   );
   const inner = (

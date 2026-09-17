@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { Cta } from "@/components/cta";
+import { buttonClasses } from "@/components/button";
 import { site, isNavGroup } from "@/lib/site";
 
 /**
@@ -88,9 +88,13 @@ export function MobileNav() {
           className="mx-auto flex w-full max-w-7xl flex-col gap-0.5 px-6 py-4"
         >
           <div className="mb-3 border-b border-hairline pb-4">
-            <Cta href={site.links.signup} external className="w-full justify-center">
-              Get started
-            </Cta>
+            <a
+              href={site.links.app}
+              onClick={() => setOpen(false)}
+              className={buttonClasses({ variant: "default", className: "w-full" })}
+            >
+              Login
+            </a>
           </div>
           {site.nav.map((item) => {
             if (isNavGroup(item)) {

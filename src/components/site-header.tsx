@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MobileNav } from "@/components/mobile-nav";
 import { MainNav } from "@/components/main-nav";
 import { Search } from "@/components/search";
-import { Cta } from "@/components/cta";
+import { buttonClasses } from "@/components/button";
 import { site } from "@/lib/site";
 
 export function SiteHeader() {
@@ -28,9 +28,12 @@ export function SiteHeader() {
           <Search />
           <ThemeToggle />
           <div className="hidden md:block">
-            <Cta href={site.links.signup} external size="sm">
-              Get started
-            </Cta>
+            <a
+              href={site.links.app}
+              className={buttonClasses({ variant: "default", size: "sm" })}
+            >
+              Login
+            </a>
           </div>
           <MobileNav />
         </div>
