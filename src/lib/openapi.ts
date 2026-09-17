@@ -7,6 +7,14 @@
 
 const UPSTREAM = "https://api.flagon.io/openapi.json";
 
+const UPSTREAM_ORIGIN = (() => {
+  try {
+    return new URL(UPSTREAM).origin;
+  } catch {
+    return "https://api.flagon.io";
+  }
+})();
+
 /** Same-origin path the reference UI fetches (proxied, cached, enriched). */
 export const SPEC_PROXY_PATH = "/docs/api/spec";
 
@@ -83,6 +91,7 @@ export type ApiOperation = {
   parameters: JsonObject[];
   requestBody?: JsonObject;
   responses: JsonObject;
+  security?: JsonObject[];
 };
 
 export type ApiTagGroup = {
@@ -134,10 +143,60 @@ export function refName(ref: string): string {
   return ref.split("/").pop() ?? "schema";
 }
 
+/** Server base URLs as absolute URLs (relative entries resolve against the API origin). */
 export function serversList(spec: Spec): string[] {
-  return asArray((spec as JsonObject).servers)
+  const raw = asArray((spec as JsonObject).servers)
     .map((s) => asString(asObject(s)?.url))
     .filter((u): u is string => Boolean(u));
+  const absolute = raw.map((u) => {
+    try {
+      return new URL(u, `${UPSTREAM_ORIGIN}/`).toString().replace(/\/+$/, "");
+    } catch {
+      return u;
+    }
+  });
+  return absolute.length ? absolute : [UPSTREAM_ORIGIN];
+}
+
+/** Origins the "Try it" proxy is allowed to forward to (spec servers + API origin). */
+export function allowedApiOrigins(spec: Spec): string[] {
+  const origins = new Set<string>([UPSTREAM_ORIGIN]);
+  for (const url of serversList(spec)) {
+    try {
+      origins.add(new URL(url).origin);
+    } catch {
+      // ignore unparseable server entries
+    }
+  }
+  return [...origins];
+}
+
+export type SecurityScheme = { name: string; scheme: JsonObject };
+
+export function securitySchemes(spec: Spec): SecurityScheme[] {
+  const comps = asObject(asObject(spec.components)?.securitySchemes);
+  if (!comps) return [];
+  return Object.entries(comps).map(([name, s]) => ({ name, scheme: asObject(s) ?? {} }));
+}
+
+export function globalSecurity(spec: Spec): JsonObject[] {
+  return asArray((spec as JsonObject).security)
+    .map(asObject)
+    .filter((x): x is JsonObject => Boolean(x));
+}
+
+/** Names of the security schemes an operation requires (its own, else the global default). */
+export function operationSecurityNames(spec: Spec, op: ApiOperation): string[] {
+  const reqs = op.security ?? globalSecurity(spec);
+  const names = new Set<string>();
+  for (const req of reqs) for (const key of Object.keys(req)) names.add(key);
+  return [...names];
+}
+
+export function schemaEntries(spec: Spec): { name: string; schema: JsonObject }[] {
+  const schemas = asObject(asObject(spec.components)?.schemas);
+  if (!schemas) return [];
+  return Object.entries(schemas).map(([name, s]) => ({ name, schema: asObject(s) ?? {} }));
 }
 
 /** Flatten paths x methods into a single list of operations, in document order. */
@@ -162,6 +221,9 @@ export function listOperations(spec: Spec): ApiOperation[] {
         parameters: [...shared, ...own],
         requestBody: asObject(op.requestBody),
         responses: asObject(op.responses) ?? {},
+        security: Array.isArray(op.security)
+          ? (op.security.map(asObject).filter(Boolean) as JsonObject[])
+          : undefined,
       });
     }
   }

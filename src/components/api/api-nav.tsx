@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { MethodBadge } from "@/components/api/method-badge";
 
-type NavOperation = { id: string; method: string; path: string; summary?: string };
-type NavGroup = { name: string; operations: NavOperation[] };
+type NavItem = { id: string; label: string; method?: string; summary?: string };
+type NavGroup = { name: string; items: NavItem[] };
 
 /**
- * Sticky operation index with live filtering and scrollspy. Clicking (or deep
- * linking to) an entry opens that endpoint's detail. The endpoint sections
- * themselves are server-rendered; this only observes and drives them.
+ * Sticky index with live filtering and scrollspy. Clicking (or deep linking to)
+ * an entry opens that section. The sections themselves are server-rendered; this
+ * only observes and drives them.
  */
 export function ApiNav({ groups }: { groups: NavGroup[] }) {
   const [query, setQuery] = useState("");
@@ -21,17 +21,16 @@ export function ApiNav({ groups }: { groups: NavGroup[] }) {
     return groups
       .map((group) => ({
         ...group,
-        operations: group.operations.filter((op) =>
-          `${op.method} ${op.path} ${op.summary ?? ""}`.toLowerCase().includes(q),
+        items: group.items.filter((item) =>
+          `${item.method ?? ""} ${item.label} ${item.summary ?? ""}`.toLowerCase().includes(q),
         ),
       }))
-      .filter((group) => group.operations.length > 0);
+      .filter((group) => group.items.length > 0);
   }, [groups, query]);
 
-  // Highlight whichever endpoint is currently near the top of the viewport.
   useEffect(() => {
     const els = groups
-      .flatMap((group) => group.operations.map((op) => document.getElementById(op.id)))
+      .flatMap((group) => group.items.map((item) => document.getElementById(item.id)))
       .filter((el): el is HTMLElement => Boolean(el));
     if (!els.length) return;
 
@@ -48,7 +47,6 @@ export function ApiNav({ groups }: { groups: NavGroup[] }) {
     return () => observer.disconnect();
   }, [groups]);
 
-  // Open the endpoint targeted by the current hash (deep links, back/forward).
   useEffect(() => {
     const openFromHash = () => {
       const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
@@ -77,8 +75,8 @@ export function ApiNav({ groups }: { groups: NavGroup[] }) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter endpoints"
-          aria-label="Filter endpoints"
+          placeholder="Filter"
+          aria-label="Filter the reference"
           className="mb-4 w-full rounded-md border border-hairline bg-panel px-3 py-1.5 text-[13px] text-foreground placeholder:text-subtle focus:border-mark focus:outline-none"
         />
         {filtered.map((group) => (
@@ -87,19 +85,19 @@ export function ApiNav({ groups }: { groups: NavGroup[] }) {
               {group.name}
             </p>
             <ul className="mt-2 space-y-0.5">
-              {group.operations.map((op) => (
-                <li key={op.id}>
+              {group.items.map((item) => (
+                <li key={item.id}>
                   <a
-                    href={`#${op.id}`}
-                    onClick={openTarget(op.id)}
+                    href={`#${item.id}`}
+                    onClick={openTarget(item.id)}
                     className={`flex items-center gap-2 rounded-md px-2 py-1 transition-colors ${
-                      activeId === op.id
+                      activeId === item.id
                         ? "bg-panel text-foreground"
                         : "text-muted-foreground hover:bg-panel hover:text-foreground"
                     }`}
                   >
-                    <MethodBadge method={op.method} />
-                    <span className="truncate font-mono text-[12px]">{op.path}</span>
+                    {item.method ? <MethodBadge method={item.method} /> : null}
+                    <span className="truncate font-mono text-[12px]">{item.label}</span>
                   </a>
                 </li>
               ))}
@@ -107,7 +105,7 @@ export function ApiNav({ groups }: { groups: NavGroup[] }) {
           </div>
         ))}
         {filtered.length === 0 ? (
-          <p className="px-2 text-[13px] text-subtle">No matching endpoints.</p>
+          <p className="px-2 text-[13px] text-subtle">No matches.</p>
         ) : null}
       </div>
     </aside>

@@ -8,9 +8,11 @@ import {
 } from "@/lib/openapi";
 import { MethodBadge } from "@/components/api/method-badge";
 import { SchemaView, typeLabel } from "@/components/api/schema";
-import { CopyButton } from "@/components/api/copy-button";
 import { JsonBlock } from "@/components/api/json-block";
 import { Markdown } from "@/components/api/markdown";
+import { OperationSecurity } from "@/components/api/security";
+import { CurlSample } from "@/components/api/curl-sample";
+import { TryIt } from "@/components/api/try-it";
 
 /** Pick a schema to show from an OpenAPI content map (prefers JSON). */
 function pickContentSchema(
@@ -24,20 +26,6 @@ function pickContentSchema(
   return schema ? { mediaType: key, schema } : undefined;
 }
 
-function buildCurl(op: ApiOperation, server: string | undefined): string {
-  const base = server ?? "https://api.flagon.io";
-  const query = op.parameters
-    .filter((p) => asString(p.in) === "query")
-    .map((p) => `${asString(p.name)}=`)
-    .join("&");
-  const url = `${base}${op.path}${query ? `?${query}` : ""}`;
-  const lines = [`curl -X ${op.method.toUpperCase()} "${url}"`];
-  if (op.requestBody) lines.push(`  -H "Content-Type: application/json"`);
-  lines.push(`  -H "Authorization: Bearer $FLAGON_TOKEN"`);
-  if (op.requestBody) lines.push(`  -d '{ }'`);
-  return lines.join(" \\\n");
-}
-
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <h4 className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-subtle">
@@ -46,7 +34,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Collapsible "Schema" panel shown under an example. */
 function SchemaDetails({ spec, schema }: { spec: Spec; schema: JsonObject }) {
   return (
     <details className="border-t border-hairline">
@@ -160,17 +147,21 @@ function Responses({ spec, responses }: { spec: Spec; responses: JsonObject }) {
   );
 }
 
-/** A single endpoint, collapsible, with parameters, bodies, responses, and a sample. */
-export function Operation({
-  spec,
-  op,
-  server,
-}: {
-  spec: Spec;
-  op: ApiOperation;
-  server?: string;
-}) {
-  const curl = buildCurl(op, server);
+/** A single endpoint: collapsible, with parameters, bodies, responses, a live console, and a sample. */
+export function Operation({ spec, op }: { spec: Spec; op: ApiOperation }) {
+  const bodyContent = pickContentSchema(asObject(op.requestBody?.content));
+  const hasBody = Boolean(bodyContent);
+  const exampleValue = bodyContent ? exampleForSchema(spec, bodyContent.schema) : null;
+  const exampleBodyPretty = exampleValue != null ? JSON.stringify(exampleValue, null, 2) : null;
+  const exampleBodyCompact = exampleValue != null ? JSON.stringify(exampleValue) : null;
+
+  const clientParams = op.parameters
+    .map((p) => ({
+      name: asString(p.name) ?? "",
+      in: asString(p.in) ?? "query",
+      required: p.required === true || asString(p.in) === "path",
+    }))
+    .filter((p) => p.name);
 
   return (
     <details
@@ -183,10 +174,11 @@ export function Operation({
           {op.path}
         </code>
         {op.summary ? (
-          <span className="hidden truncate text-sm text-muted-foreground sm:block sm:max-w-[45%]">
+          <span className="hidden truncate text-sm text-muted-foreground sm:block sm:max-w-[40%]">
             {op.summary}
           </span>
         ) : null}
+        <OperationSecurity spec={spec} op={op} />
         {op.deprecated ? (
           <span className="font-mono text-[10px] uppercase tracking-wide text-amber-600 dark:text-amber-400">
             deprecated
@@ -202,19 +194,25 @@ export function Operation({
           <Markdown className="text-sm text-muted-foreground">{op.description}</Markdown>
         ) : null}
 
+        <TryIt
+          method={op.method}
+          path={op.path}
+          params={clientParams}
+          hasBody={hasBody}
+          exampleBody={exampleBodyPretty}
+        />
+
         <Parameters spec={spec} params={op.parameters} />
         {op.requestBody ? <RequestBody spec={spec} requestBody={op.requestBody} /> : null}
         <Responses spec={spec} responses={op.responses} />
 
-        <div>
-          <div className="flex items-center justify-between">
-            <SectionLabel>Example request</SectionLabel>
-            <CopyButton text={curl} label="Copy" />
-          </div>
-          <pre className="mt-3 overflow-x-auto rounded-lg border border-hairline bg-panel px-4 py-3 font-mono text-[12.5px] leading-relaxed text-foreground">
-            <code>{curl}</code>
-          </pre>
-        </div>
+        <CurlSample
+          method={op.method}
+          path={op.path}
+          params={clientParams}
+          hasBody={hasBody}
+          exampleBody={exampleBodyCompact}
+        />
       </div>
     </details>
   );
