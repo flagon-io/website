@@ -47,7 +47,8 @@ const TIERS: Tier[] = [
   {
     name: "Pay-as-you-go",
     price: "Usage-based",
-    tagline: "Add a card and the fixed limits lift. Pay for what you use, capped where you say.",
+    tagline:
+      "Add a card and the fixed limits lift. Pay for what you use, capped where you say.",
     features: [
       "Everything in Free, at limits you control",
       "Priced per unit, with a spend cap",
@@ -60,7 +61,8 @@ const TIERS: Tier[] = [
   {
     name: "Enterprise",
     price: "Custom",
-    tagline: "For large orgs that need SLAs, dedicated support, and single-tenant deployments.",
+    tagline:
+      "For large orgs that need SLAs, dedicated support, and single-tenant deployments.",
     features: [
       "SLAs and dedicated support",
       "Single-tenant deployment",
@@ -72,27 +74,49 @@ const TIERS: Tier[] = [
 ];
 
 type Cell = boolean | string;
-type CompareGroup = { group: string; rows: { feature: string; values: [Cell, Cell, Cell] }[] };
+type CompareGroup = {
+  group: string;
+  rows: { feature: string; values: [Cell, Cell, Cell] }[];
+};
 
 const COMPARE: CompareGroup[] = [
   {
     group: "Platform",
     rows: [
-      { feature: "The full product, every feature", values: [true, true, true] },
+      {
+        feature: "The full product, every feature",
+        values: [true, true, true],
+      },
       { feature: "Projects", values: ["1", "Unlimited", "Unlimited"] },
-      { feature: "Teams and teammates", values: ["Unlimited", "Unlimited", "Unlimited"] },
+      {
+        feature: "Teams and teammates",
+        values: ["Unlimited", "Unlimited", "Unlimited"],
+      },
       {
         feature: "Data retention",
-        values: ["Short window", "Up to 7 years, configurable", "Up to 7 years, configurable"],
+        values: [
+          "Short window",
+          "Up to 7 years, configurable",
+          "Up to 7 years, configurable",
+        ],
       },
-      { feature: "Usage limits", values: ["Generous", "Higher, usage-based", "Custom"] },
-      { feature: "Audit history", values: ["Full", "Full, exportable", "Full, exportable"] },
+      {
+        feature: "Usage limits",
+        values: ["Generous", "Higher, usage-based", "Custom"],
+      },
+      {
+        feature: "Audit history",
+        values: ["Full", "Full, exportable", "Full, exportable"],
+      },
     ],
   },
   {
     group: "Teams and access",
     rows: [
-      { feature: "Roles and permissions", values: ["Advanced", "Advanced", "Advanced"] },
+      {
+        feature: "Roles and permissions",
+        values: ["Advanced", "Advanced", "Advanced"],
+      },
       { feature: "SSO and SAML", values: [true, true, true] },
       { feature: "SCIM provisioning", values: [true, true, true] },
     ],
@@ -110,7 +134,10 @@ const COMPARE: CompareGroup[] = [
     group: "Support",
     rows: [
       { feature: "Community support", values: [true, true, true] },
-      { feature: "Priority support from the builders", values: [false, true, true] },
+      {
+        feature: "Priority support from the builders",
+        values: [false, true, true],
+      },
       { feature: "Dedicated support and SLAs", values: [false, false, true] },
     ],
   },
@@ -195,11 +222,15 @@ export default function PricingPage() {
             title="Free until you need more. Fair when you do."
             lead="You get the whole core product for free, with fixed limits you don't have to manage. When you need past those limits, or a feature that costs us real money to run, you add a card and it's pay-as-you-go, with a ceiling you set. No per-seat tax, no security tax, no bill shock."
           />
-          <div className={`mt-8 flex flex-col items-start gap-x-4 gap-y-3 sm:flex-row sm:items-center ${GUTTER}`}>
+          <div
+            className={`mt-8 flex flex-col items-start gap-x-4 gap-y-3 sm:flex-row sm:items-center ${GUTTER}`}
+          >
             <Cta href={site.links.signup} external>
               Start for free
             </Cta>
-            <span className="text-sm text-subtle">No credit card. Not a trial.</span>
+            <span className="text-sm text-subtle">
+              No credit card. Not a trial.
+            </span>
           </div>
         </Section>
 
@@ -268,8 +299,12 @@ export default function PricingPage() {
             <SchematicGrid cols={4}>
               {PRINCIPLES.map((p) => (
                 <div key={p.title} className="p-6 sm:p-8">
-                  <h3 className="text-base font-semibold tracking-tight">{p.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+                  <h3 className="text-base font-semibold tracking-tight">
+                    {p.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {p.body}
+                  </p>
                 </div>
               ))}
             </SchematicGrid>
@@ -289,7 +324,11 @@ export default function PricingPage() {
           <div className={GUTTER}>
             <div className="mx-auto max-w-2xl rounded-xl border border-hairline bg-panel p-6 sm:p-8">
               {founder ? (
-                <AuthorCard name={founder.name} role={founder.role} photo={founder.photo} />
+                <AuthorCard
+                  name={founder.name}
+                  role={founder.role}
+                  photo={founder.photo}
+                />
               ) : null}
               <h2 className="mt-6 text-lg font-semibold tracking-tight">
                 A straight word about money
@@ -299,28 +338,29 @@ export default function PricingPage() {
                   <span aria-hidden className="text-brand">
                     &rarr;
                   </span>
-                  We&rsquo;d genuinely rather you use Flagon free and tell a friend than pay and
-                  feel it.
+                  We&rsquo;d genuinely rather you use Flagon free and tell a
+                  friend than pay and feel it.
                 </li>
                 <li className="flex gap-2.5">
                   <span aria-hidden className="text-brand">
                     &rarr;
                   </span>
-                  Nothing here is a loss-leader we plan to make expensive once you depend on it.
+                  Nothing here is a loss-leader we plan to make expensive once
+                  you depend on it.
                 </li>
                 <li className="flex gap-2.5">
                   <span aria-hidden className="text-brand">
                     &rarr;
                   </span>
-                  SSO isn&rsquo;t behind a wall. Charging extra for security is a scam, and we
-                  won&rsquo;t run one.
+                  SSO isn&rsquo;t behind a wall. Charging extra for security is
+                  a scam, and we won&rsquo;t run one.
                 </li>
                 <li className="flex gap-2.5">
                   <span aria-hidden className="text-brand">
                     &rarr;
                   </span>
-                  It&rsquo;s open source. If you&rsquo;d rather run it yourself forever, the
-                  door&rsquo;s right there.
+                  It&rsquo;s open source. If you&rsquo;d rather run it yourself
+                  forever, the door&rsquo;s right there.
                 </li>
               </ul>
             </div>
@@ -360,9 +400,9 @@ export default function PricingPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-pretty text-muted-foreground">
               No credit card, no countdown timer, no fake &ldquo;only 2 seats
-              left,&rdquo; no salesperson who suddenly knows your first name. Use it
-              for real, and pay us only when you&rsquo;ve outgrown free and it&rsquo;s
-              worth it.
+              left,&rdquo; no salesperson who suddenly knows your first name.
+              Use it for real, and pay us only when you&rsquo;ve outgrown free
+              and it&rsquo;s worth it.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Cta href={site.links.signup} external>
@@ -413,19 +453,26 @@ function PlanCard({
           )}
           aria-hidden
         />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-subtle">{label}</span>
+        <span className="font-mono text-[11px] uppercase tracking-widest text-subtle">
+          {label}
+        </span>
       </div>
 
       <div className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <h3 className="text-xl font-semibold tracking-tight">{name}</h3>
         <span className="text-sm text-subtle">{price}</span>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{tagline}</p>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {tagline}
+      </p>
 
       <ul className="mt-6 flex flex-1 flex-col gap-3 border-t border-hairline pt-6">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" strokeWidth={2.5} />
+            <Check
+              className="mt-0.5 h-4 w-4 shrink-0 text-brand"
+              strokeWidth={2.5}
+            />
             <span className="text-muted-foreground">{f}</span>
           </li>
         ))}
@@ -467,17 +514,33 @@ function Connector() {
 
 function ValueCell({ value }: { value: Cell }) {
   if (value === true)
-    return <Check className="mx-auto h-4 w-4 text-brand" strokeWidth={2.5} aria-label="Included" />;
+    return (
+      <Check
+        className="mx-auto h-4 w-4 text-brand"
+        strokeWidth={2.5}
+        aria-label="Included"
+      />
+    );
   if (value === false)
-    return <Minus className="mx-auto h-4 w-4 text-subtle" strokeWidth={2} aria-label="Not included" />;
+    return (
+      <Minus
+        className="mx-auto h-4 w-4 text-subtle"
+        strokeWidth={2}
+        aria-label="Not included"
+      />
+    );
   return <span className="text-muted-foreground">{value}</span>;
 }
 
 function ComparisonTable() {
-  const plans = TIERS.map((t) => ({ name: t.name, featured: t.featured, future: t.future }));
+  const plans = TIERS.map((t) => ({
+    name: t.name,
+    featured: t.featured,
+    future: t.future,
+  }));
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[680px] border-collapse text-sm">
+      <table className="w-full min-w-170 border-collapse text-sm">
         <thead>
           <tr className="border-b border-hairline">
             <th className="w-2/5 py-4 pr-4 text-left" />
@@ -512,11 +575,16 @@ function ComparisonTable() {
               </tr>
               {group.rows.map((row) => (
                 <tr key={row.feature} className="border-b border-hairline">
-                  <td className="py-3.5 pr-4 text-muted-foreground">{row.feature}</td>
+                  <td className="py-3.5 pr-4 text-muted-foreground">
+                    {row.feature}
+                  </td>
                   {row.values.map((v, i) => (
                     <td
                       key={i}
-                      className={cn("px-4 py-3.5 text-center", plans[i]?.featured && "bg-brand/[0.04]")}
+                      className={cn(
+                        "px-4 py-3.5 text-center",
+                        plans[i]?.featured && "bg-brand/4",
+                      )}
                     >
                       <ValueCell value={v} />
                     </td>
