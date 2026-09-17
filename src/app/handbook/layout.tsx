@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { HandbookSidebar } from "@/components/handbook-sidebar";
+import { ScrollReset } from "@/components/scroll-reset";
 import { getHandbookNav } from "@/lib/handbook";
 import { site } from "@/lib/site";
 
@@ -47,6 +48,7 @@ export default function HandbookLayout({ children }: { children: ReactNode }) {
             tabIndex={-1}
             className="min-w-0 outline-none lg:h-full lg:overflow-y-auto"
           >
+            <ScrollReset targetId="content" />
             <div className="px-6 py-10 sm:px-8">{children}</div>
           </div>
         </div>
