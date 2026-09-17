@@ -78,7 +78,7 @@ export function ThemeToggle() {
           aria-label={`Theme: ${pref}`}
           className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand data-[state=open]:text-foreground"
         >
-          <Current className="h-[18px] w-[18px]" strokeWidth={2} />
+          <Current className="h-4.5 w-4.5" strokeWidth={2} />
         </button>
       </DropdownMenu.Trigger>
 
@@ -86,7 +86,7 @@ export function ThemeToggle() {
         <DropdownMenu.Content
           align="end"
           sideOffset={8}
-          className="z-40 min-w-[168px] rounded-xl border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10"
+          className="z-40 min-w-42 rounded-xl border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10"
         >
           <DropdownMenu.RadioGroup value={pref} onValueChange={choose}>
             {OPTIONS.map((o) => (
@@ -94,14 +94,20 @@ export function ThemeToggle() {
                 key={o.value}
                 value={o.value}
                 className={cn(
-                  "flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-panel data-[highlighted]:text-foreground",
-                  pref === o.value ? "text-foreground" : "text-muted-foreground",
+                  "flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm outline-none transition-colors data-highlighted:bg-panel data-highlighted:text-foreground",
+                  pref === o.value
+                    ? "text-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 <o.icon className="h-4 w-4" strokeWidth={2} aria-hidden />
                 {o.label}
                 <DropdownMenu.ItemIndicator className="ml-auto">
-                  <Check className="h-4 w-4 text-brand" strokeWidth={2} aria-hidden />
+                  <Check
+                    className="h-4 w-4 text-brand"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                 </DropdownMenu.ItemIndicator>
               </DropdownMenu.RadioItem>
             ))}

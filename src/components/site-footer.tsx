@@ -33,7 +33,7 @@ export function SiteFooter() {
               aria-label="Flagon on GitHub"
               className="text-subtle transition hover:text-foreground"
             >
-              <SiGithub className="h-[18px] w-[18px]" />
+              <SiGithub className="h-4.5 w-4.5" />
             </a>
             <a
               href={site.links.discord}
@@ -42,7 +42,7 @@ export function SiteFooter() {
               aria-label="Flagon on Discord"
               className="text-subtle transition hover:text-foreground"
             >
-              <SiDiscord className="h-[18px] w-[18px]" />
+              <SiDiscord className="h-4.5 w-4.5" />
             </a>
           </div>
         </div>

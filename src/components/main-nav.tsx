@@ -44,7 +44,7 @@ export function MainNav({ className }: { className?: string }) {
                   />
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content className="absolute left-0 top-full z-30 pt-2.5">
-                  <div className="min-w-[208px] rounded-xl border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10">
+                  <div className="min-w-52 rounded-xl border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10">
                     {item.sections.map((section, si) => (
                       <div
                         key={si}

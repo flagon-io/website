@@ -33,6 +33,12 @@ type Card = {
 
 const AVAILABLE: Card[] = [
   {
+    title: "API reference",
+    body: "Explore every endpoint, schema, and example, generated live from the OpenAPI spec and always current with what the API actually does.",
+    href: "/docs/api",
+    icon: Code,
+  },
+  {
     title: "The handbook",
     body: "How the whole company works, in ~60 pages. The most thorough thing we've documented so far.",
     href: "/handbook",
@@ -63,11 +69,6 @@ const PLANNED: { title: string; body: string; icon: LucideIcon }[] = [
     title: "Guides",
     body: "Task-focused walkthroughs for the things people actually sit down to do.",
     icon: Compass,
-  },
-  {
-    title: "Reference",
-    body: "Every API, option, and return value, documented precisely and kept current.",
-    icon: Code,
   },
   {
     title: "SDKs & libraries",
@@ -101,7 +102,7 @@ export default function DocsPage() {
         <Section divider>
           <SectionHeader title="What you can read today" />
           <div className={`mt-10 ${GUTTER}`}>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {AVAILABLE.map((c) => {
                 const Icon = c.icon;
                 const inner = (
