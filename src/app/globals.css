@@ -140,6 +140,15 @@
 
 html {
   background: var(--color-background);
+  /* Tie the browser's native color-scheme (canvas, form controls, scrollbars,
+   * and the surface painted during a click or route change) to the active
+   * theme, so a dark page never flashes the light UA canvas. Class-driven so it
+   * follows the toggle, not just the OS preference. */
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {

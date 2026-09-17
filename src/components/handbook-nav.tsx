@@ -133,7 +133,10 @@ function SectionItem({
       <Accordion.Header>
         <Accordion.Trigger
           className={cn(
-            "group flex w-full items-center gap-2 py-2.5 pr-4 font-mono text-[11px] uppercase tracking-widest text-subtle outline-none transition-colors hover:bg-panel hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand data-[state=open]:text-foreground",
+            // Transition only text/background on hover, NOT border-color: the
+            // open-state bottom border would otherwise animate from currentColor
+            // (near-white on hover) down to --hairline, flashing white on click.
+            "group flex w-full items-center gap-2 py-2.5 pr-4 font-mono text-[11px] uppercase tracking-widest text-subtle outline-none transition-[color,background-color] hover:bg-panel hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand data-[state=open]:text-foreground",
             // Divider under the header only when open, separating it from its
             // page list. Closed, the Accordion.Item's own border-b handles it,
             // so this never double-stacks.
