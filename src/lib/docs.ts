@@ -22,6 +22,8 @@ export type DocMeta = {
   description?: string;
   section?: string;
   visibility: DocVisibility;
+  /** "planned" marks a placeholder page (shown in nav, renders a stub state). */
+  status?: string;
   order?: number;
 };
 

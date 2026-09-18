@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-type Section = { section: string; docs: { slug: string; title: string }[] };
+type SidebarDoc = { slug: string; title: string; status?: string };
+type Section = { section: string; docs: SidebarDoc[] };
 
 /**
  * Persistent navigation rail for the docs: every section and its pages, with the
@@ -30,18 +31,26 @@ export function DocsSidebar({
           <ul className="mt-3 flex flex-col gap-0.5">
             {group.docs.map((doc) => {
               const active = doc.slug === currentSlug;
+              const planned = doc.status === "planned";
               return (
                 <li key={doc.slug}>
                   <Link
                     href={`/docs/${doc.slug}`}
                     aria-current={active ? "page" : undefined}
-                    className={`block rounded-md px-2.5 py-1.5 text-sm transition ${
+                    className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition ${
                       active
                         ? "bg-panel font-medium text-brand"
-                        : "text-muted-foreground hover:text-foreground"
+                        : planned
+                          ? "text-subtle hover:text-muted-foreground"
+                          : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {doc.title}
+                    {planned ? (
+                      <span className="rounded border border-hairline px-1 py-0.5 font-mono text-[9px] uppercase tracking-widest text-subtle">
+                        Soon
+                      </span>
+                    ) : null}
                   </Link>
                 </li>
               );

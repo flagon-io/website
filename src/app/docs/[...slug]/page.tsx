@@ -7,6 +7,7 @@ import { Toc } from "@/components/toc";
 import { Frame } from "@/components/frame";
 import { DocsSidebar } from "@/components/docs-sidebar";
 import { DocsSearch } from "@/components/docs-search";
+import { DocComingSoon } from "@/components/doc-coming-soon";
 import { extractToc } from "@/lib/toc";
 import { getDoc, getProductDocsBySection } from "@/lib/docs";
 
@@ -43,7 +44,8 @@ export default async function DocPage({ params }: { params: Promise<Params> }) {
   const [doc, sections] = await Promise.all([getDoc(path), getProductDocsBySection()]);
   if (!doc) notFound();
 
-  const toc = extractToc(doc.body);
+  const planned = doc.status === "planned";
+  const toc = planned ? [] : extractToc(doc.body);
 
   // Flat reading order across sections, for prev/next.
   const flat = sections.flatMap((g) => g.docs);
@@ -105,23 +107,30 @@ export default async function DocPage({ params }: { params: Promise<Params> }) {
                   ) : null}
                 </header>
 
-                <div className="prose mt-10 max-w-2xl">
-                  <Mdx source={doc.body} />
-                </div>
+                {planned ? (
+                  <DocComingSoon slug={path} />
+                ) : (
+                  <div className="prose mt-10 max-w-2xl">
+                    <Mdx source={doc.body} />
+                  </div>
+                )}
               </article>
 
               {/* Docs are the single source of truth in the product repo: edit them
-                  next to the code they describe. */}
-              <div className="mt-12 max-w-2xl border-t border-hairline pt-6">
-                <a
-                  href={`https://github.com/flagon-io/flagon/blob/main/docs/${path}.mdx`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-[11px] uppercase tracking-widest text-subtle transition hover:text-foreground"
-                >
-                  Edit this page on GitHub →
-                </a>
-              </div>
+                  next to the code they describe. Planned pages carry their own
+                  "write this" link, so the edit link is only for real articles. */}
+              {!planned && (
+                <div className="mt-12 max-w-2xl border-t border-hairline pt-6">
+                  <a
+                    href={`https://github.com/flagon-io/flagon/blob/main/docs/${path}.mdx`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-[11px] uppercase tracking-widest text-subtle transition hover:text-foreground"
+                  >
+                    Edit this page on GitHub →
+                  </a>
+                </div>
+              )}
 
               {(prev || next) && (
                 <nav className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
