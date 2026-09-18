@@ -4,19 +4,17 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Mdx } from "@/components/mdx";
 import { Toc } from "@/components/toc";
+import { HandbookUnavailable } from "@/components/handbook-unavailable";
 import {
   getHandbookPage,
   getHandbookOrder,
-  listHandbookSlugs,
 } from "@/lib/handbook";
 import { extractToc } from "@/lib/toc";
-import { site } from "@/lib/site";
 
 type Params = { slug: string };
 
-export function generateStaticParams(): Params[] {
-  return listHandbookSlugs().map((slug) => ({ slug }));
-}
+// Rendered live per request from the API (no local copy, no build-time list),
+// so the handbook is always current with the corpus.
 
 export async function generateMetadata({
   params,
@@ -24,7 +22,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const page = getHandbookPage(slug);
+  const page = await getHandbookPage(slug);
   if (!page) return {};
   return {
     title: `${page.title} · Handbook`,
@@ -38,12 +36,17 @@ export default async function HandbookPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const page = getHandbookPage(slug);
-  if (!page) notFound();
+  const [page, order] = await Promise.all([getHandbookPage(slug), getHandbookOrder()]);
+
+  // Distinguish "API unreachable" from "no such page". The handbook is never
+  // legitimately empty, so an empty order means the API is down: show a plain
+  // unavailable state. A populated order without this slug is a genuine 404.
+  if (!page) {
+    if (order.length === 0) return <HandbookUnavailable />;
+    notFound();
+  }
 
   const toc = extractToc(page.content);
-
-  const order = getHandbookOrder();
   const idx = order.findIndex((p) => p.slug === slug);
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
@@ -74,7 +77,7 @@ export default async function HandbookPage({
         {/* edit link */}
         <div className="mt-12 max-w-2xl border-t border-hairline pt-6">
           <a
-            href={`${site.links.repo}/blob/main/content/handbook/${slug}.mdx`}
+            href={`https://github.com/flagon-io/flagon/blob/main/docs/handbook/${slug}.mdx`}
             target="_blank"
             rel="noreferrer"
             className="font-mono text-[11px] uppercase tracking-widest text-subtle transition hover:text-foreground"

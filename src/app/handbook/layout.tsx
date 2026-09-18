@@ -13,8 +13,8 @@ import { site } from "@/lib/site";
  * doc pages get this compact bar instead. On small screens it all collapses to
  * normal page flow.
  */
-export default function HandbookLayout({ children }: { children: ReactNode }) {
-  const categories = getHandbookNav().map((c) => ({
+export default async function HandbookLayout({ children }: { children: ReactNode }) {
+  const categories = (await getHandbookNav()).map((c) => ({
     name: c.name,
     sections: c.sections.map((s) => ({
       name: s.name,
@@ -23,6 +23,22 @@ export default function HandbookLayout({ children }: { children: ReactNode }) {
     })),
   }));
   const year = new Date().getFullYear();
+
+  // When the API is unreachable the handbook has no pages, so there is no sidebar
+  // to show. Collapse to a single centered column rather than leaving a jarring
+  // empty rail; the page renders a plain "temporarily unavailable" state inside.
+  const hasPages = categories.some((c) => c.sections.some((s) => s.pages.length > 0));
+
+  const footer = (
+    <footer className="border-t border-hairline">
+      <div className="flex flex-col items-center gap-2 px-6 py-4 font-mono text-[11px] uppercase tracking-widest text-subtle sm:flex-row sm:justify-between sm:px-8">
+        <p>
+          © {year} {site.legalName}
+        </p>
+        <p>Built in public · {site.domain}</p>
+      </div>
+    </footer>
+  );
 
   return (
     <div className="relative flex flex-1 flex-col">
@@ -35,34 +51,36 @@ export default function HandbookLayout({ children }: { children: ReactNode }) {
 
       <SiteHeader />
 
-      <div className="mx-auto w-full max-w-7xl border-x border-hairline lg:flex lg:h-[calc(100dvh-4rem)] lg:flex-col lg:overflow-hidden">
-        <div className="grid grid-cols-1 lg:min-h-0 lg:flex-1 lg:grid-cols-[276px_minmax(0,1fr)] lg:overflow-hidden">
-          {/* Left rail: own scroll on desktop; stacked above content on mobile. */}
-          <aside className="border-b border-hairline py-4 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:pb-6 lg:pt-0">
-            <HandbookSidebar categories={categories} />
-          </aside>
+      {hasPages ? (
+        <div className="mx-auto w-full max-w-7xl border-x border-hairline lg:flex lg:h-[calc(100dvh-4rem)] lg:flex-col lg:overflow-hidden">
+          <div className="grid grid-cols-1 lg:min-h-0 lg:flex-1 lg:grid-cols-[276px_minmax(0,1fr)] lg:overflow-hidden">
+            {/* Left rail: own scroll on desktop; stacked above content on mobile. */}
+            <aside className="border-b border-hairline py-4 lg:h-full lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:pb-6 lg:pt-0">
+              <HandbookSidebar categories={categories} />
+            </aside>
 
-          {/* Content: own scroll on desktop. */}
-          <div
-            id="content"
-            tabIndex={-1}
-            className="min-w-0 outline-none lg:h-full lg:overflow-y-auto"
-          >
-            <ScrollReset targetId="content" />
-            <div className="px-6 py-10 sm:px-8">{children}</div>
+            {/* Content: own scroll on desktop. */}
+            <div
+              id="content"
+              tabIndex={-1}
+              className="min-w-0 outline-none lg:h-full lg:overflow-y-auto"
+            >
+              <ScrollReset targetId="content" />
+              <div className="px-6 py-10 sm:px-8">{children}</div>
+            </div>
           </div>
+
+          {/* Slim footer bar, full width across both panes. */}
+          {footer}
         </div>
-
-        {/* Slim footer bar, full width across both panes. */}
-        <footer className="border-t border-hairline">
-          <div className="flex flex-col items-center gap-2 px-6 py-4 font-mono text-[11px] uppercase tracking-widest text-subtle sm:flex-row sm:justify-between sm:px-8">
-            <p>
-              © {year} {site.legalName}
-            </p>
-            <p>Built in public · {site.domain}</p>
+      ) : (
+        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col border-x border-hairline">
+          <div id="content" tabIndex={-1} className="flex-1 px-6 py-10 outline-none sm:px-8">
+            {children}
           </div>
-        </footer>
-      </div>
+          {footer}
+        </div>
+      )}
     </div>
   );
 }

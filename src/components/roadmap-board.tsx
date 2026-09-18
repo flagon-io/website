@@ -38,7 +38,7 @@ export function RoadmapBoard() {
   const [query, setQuery] = useState("");
   const [team, setTeam] = useState("all");
   const [selected, setSelected] = useState<RoadmapItem | null>(null);
-  const teams = useMemo(roadmapTeams, []);
+  const teams = useMemo(() => roadmapTeams(), []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

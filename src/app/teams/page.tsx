@@ -45,7 +45,7 @@ export default function TeamsPage() {
               Why we work in small teams
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-pretty text-muted-foreground">
-              Ownership only feels real when it's whole. The full reasoning, and
+              Ownership only feels real when it&rsquo;s whole. The full reasoning, and
               how we intend to stay small as we grow, is in the handbook.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

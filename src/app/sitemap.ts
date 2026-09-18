@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 import { listHandbookSlugs } from "@/lib/handbook";
 import { getAllPosts } from "@/lib/blog";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = site.url;
   const now = new Date();
 
@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
   }));
 
-  const handbook = listHandbookSlugs().map((slug) => ({
+  const handbook = (await listHandbookSlugs()).map((slug) => ({
     url: `${base}/handbook/${slug}`,
     lastModified: now,
   }));

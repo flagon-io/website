@@ -31,6 +31,11 @@ export function ApiConfigProvider({
   const [token, setTokenState] = useState("");
 
   useEffect(() => {
+    // Rehydrate persisted config after mount. This one-time read from
+    // localStorage must run post-mount, not during render, or SSR and the client
+    // would disagree and hydration would mismatch - so the set-state-in-effect
+    // rule's cascading-render concern doesn't apply here.
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const storedToken = localStorage.getItem(TOKEN_KEY);
       if (storedToken) setTokenState(storedToken);
@@ -39,6 +44,7 @@ export function ApiConfigProvider({
     } catch {
       // localStorage unavailable; defaults are fine.
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [servers]);
 
   const setServer = (s: string) => {

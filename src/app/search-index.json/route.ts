@@ -1,8 +1,7 @@
 import { getSearchIndex } from "@/lib/search";
 
-/** Prerendered at build time; the client palette fetches it lazily on first open. */
-export const dynamic = "force-static";
-
-export function GET() {
-  return Response.json(getSearchIndex());
+/** The client palette fetches this lazily on first open. The handbook portion is
+ *  read live from the API, so the route renders per request. */
+export async function GET() {
+  return Response.json(await getSearchIndex());
 }

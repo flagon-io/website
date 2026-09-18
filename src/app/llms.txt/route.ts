@@ -3,10 +3,8 @@ import { getAllPosts } from "@/lib/blog";
 import { site } from "@/lib/site";
 
 // https://llmstxt.org, a plain-text index of the site for LLMs, served at
-// /llms.txt. Prerendered so it's just a static file.
-export const dynamic = "force-static";
-
-export function GET() {
+// /llms.txt. The handbook index is read live from the API.
+export async function GET() {
   const base = site.url;
   const out: string[] = [];
 
@@ -18,7 +16,7 @@ export function GET() {
   );
 
   out.push("## Handbook", "");
-  for (const section of getHandbookSections()) {
+  for (const section of await getHandbookSections()) {
     out.push(`### ${section.name}`);
     for (const p of section.pages) {
       const desc = p.description ? `: ${p.description}` : "";

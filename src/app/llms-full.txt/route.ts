@@ -1,11 +1,11 @@
-import { getHandbookOrder } from "@/lib/handbook";
+import { getHandbookOrder, getHandbookPage } from "@/lib/handbook";
 import { site } from "@/lib/site";
 
 // The entire handbook as one plain-text/markdown file, for LLMs that would
-// rather read everything in a single fetch. Linked from /llms.txt.
-export const dynamic = "force-static";
-
-export function GET() {
+// rather read everything in a single fetch. Linked from /llms.txt. Read live
+// from the API: the reading order comes from one call, then each page's body is
+// fetched in parallel.
+export async function GET() {
   const out: string[] = [];
   out.push(`# ${site.name} handbook`, "");
   out.push(`> ${site.description}`, "");
@@ -16,7 +16,10 @@ export function GET() {
     "",
   );
 
-  for (const page of getHandbookOrder()) {
+  const order = await getHandbookOrder();
+  const pages = await Promise.all(order.map((m) => getHandbookPage(m.slug)));
+  for (const page of pages) {
+    if (!page) continue;
     out.push(`# ${page.title}`);
     if (page.description) out.push("", `> ${page.description}`);
     out.push("", page.content.trim(), "", "---", "");

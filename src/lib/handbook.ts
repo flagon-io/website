@@ -1,19 +1,35 @@
 import "server-only";
-import { listSlugs, readCollection, readDoc } from "@/lib/content";
+import readingTime from "reading-time";
+import { getDoc, getDocs, type DocMeta } from "@/lib/docs";
 
-export type HandbookPage = {
+/**
+ * The handbook is served by the API, straight from the flagon repo's docs
+ * corpus (slugs under "handbook/"). This site is a pure client: it holds no copy,
+ * so the handbook can never drift from the source. These helpers shape the
+ * corpus into the structures the handbook UI already expects; the section
+ * taxonomy below is presentation that stays here.
+ */
+
+const PREFIX = "handbook/";
+
+/** Metadata for one page (no body): enough for nav, lists, search, sitemap. */
+export type HandbookMeta = {
   slug: string;
   title: string;
   description: string;
   section: string;
   order: number;
+};
+
+/** A full page, with its rendered-from Markdown body and reading estimate. */
+export type HandbookPage = HandbookMeta & {
   readingMinutes: number;
   content: string;
 };
 
 export type HandbookSection = {
   name: string;
-  pages: HandbookPage[];
+  pages: HandbookMeta[];
   /** A department we'll build out later: shown disabled with a "Soon" pill. */
   soon?: boolean;
 };
@@ -60,36 +76,49 @@ const SECTIONS: { name: string; category: string | null; soon?: boolean }[] = [
 
 const SECTION_ORDER = SECTIONS.map((s) => s.name);
 
-function toPage(d: {
-  slug: string;
-  content: string;
-  data: Record<string, unknown>;
-  readingMinutes: number;
-}): HandbookPage {
+/** The website-facing slug (no "handbook/" prefix). */
+function pageSlug(corpusSlug: string): string {
+  return corpusSlug.slice(PREFIX.length);
+}
+
+function toMeta(d: DocMeta): HandbookMeta {
   return {
-    slug: d.slug,
-    title: String(d.data.title ?? d.slug),
-    description: String(d.data.description ?? ""),
-    section: String(d.data.section ?? "Chapters"),
-    order: Number(d.data.order ?? 100),
-    readingMinutes: d.readingMinutes,
-    content: d.content,
+    slug: pageSlug(d.slug),
+    title: d.title,
+    description: d.description ?? "",
+    section: d.section ?? "Chapters",
+    order: d.order ?? 100,
   };
 }
 
-export function listHandbookSlugs(): string[] {
-  return listSlugs("handbook");
+/** Every handbook page's metadata, from the corpus. */
+async function handbookMetas(): Promise<HandbookMeta[]> {
+  const docs = await getDocs();
+  return docs.filter((d) => d.slug.startsWith(PREFIX)).map(toMeta);
 }
 
-export function getHandbookPage(slug: string): HandbookPage | null {
-  const d = readDoc("handbook", slug);
-  return d ? toPage(d) : null;
+export async function listHandbookSlugs(): Promise<string[]> {
+  return (await handbookMetas()).map((p) => p.slug);
+}
+
+export async function getHandbookPage(slug: string): Promise<HandbookPage | null> {
+  const doc = await getDoc(`${PREFIX}${slug}`);
+  if (!doc) return null;
+  return {
+    slug,
+    title: doc.title,
+    description: doc.description ?? "",
+    section: doc.section ?? "Chapters",
+    order: doc.order ?? 100,
+    readingMinutes: Math.max(1, Math.round(readingTime(doc.body).minutes)),
+    content: doc.body,
+  };
 }
 
 /** All pages grouped into ordered sub-sections, each section's pages ordered. */
-export function getHandbookSections(): HandbookSection[] {
-  const pages = readCollection("handbook").map(toPage);
-  const bySection = new Map<string, HandbookPage[]>();
+export async function getHandbookSections(): Promise<HandbookSection[]> {
+  const pages = await handbookMetas();
+  const bySection = new Map<string, HandbookMeta[]>();
   for (const p of pages) {
     const list = bySection.get(p.section) ?? [];
     list.push(p);
@@ -112,8 +141,8 @@ export function getHandbookSections(): HandbookSection[] {
  * Includes `soon` placeholder sections (declared in SECTIONS, no pages yet) so
  * the departments we plan to build show up disabled with a "Soon" pill.
  */
-export function getHandbookNav(): HandbookCategory[] {
-  const withPages = new Map(getHandbookSections().map((s) => [s.name, s]));
+export async function getHandbookNav(): Promise<HandbookCategory[]> {
+  const withPages = new Map((await getHandbookSections()).map((s) => [s.name, s]));
   const seen = new Set<string>();
   const cats: HandbookCategory[] = [];
   const add = (category: string | null, section: HandbookSection) => {
@@ -130,13 +159,13 @@ export function getHandbookNav(): HandbookCategory[] {
     // a known section with no pages and no `soon` flag is simply omitted
   }
   // Any section that has pages but isn't declared in SECTIONS: append at the end.
-  for (const s of getHandbookSections()) {
+  for (const s of await getHandbookSections()) {
     if (!seen.has(s.name)) add(null, s);
   }
   return cats;
 }
 
-/** Flat, reading-order list of pages (for prev/next navigation). */
-export function getHandbookOrder(): HandbookPage[] {
-  return getHandbookSections().flatMap((s) => s.pages);
+/** Flat, reading-order list of page metadata (for prev/next navigation). */
+export async function getHandbookOrder(): Promise<HandbookMeta[]> {
+  return (await getHandbookSections()).flatMap((s) => s.pages);
 }

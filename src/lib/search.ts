@@ -27,8 +27,8 @@ const PAGES: SearchDoc[] = [
 ];
 
 /** The full index: pages, every handbook page, and every blog post. */
-export function getSearchIndex(): SearchDoc[] {
-  const handbook: SearchDoc[] = getHandbookSections().flatMap((s) =>
+export async function getSearchIndex(): Promise<SearchDoc[]> {
+  const handbook: SearchDoc[] = (await getHandbookSections()).flatMap((s) =>
     s.pages.map((p) => ({
       title: p.title,
       url: `/handbook/${p.slug}`,
