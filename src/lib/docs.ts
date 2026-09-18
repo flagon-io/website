@@ -82,7 +82,10 @@ export async function getDocsBySection(): Promise<{ section: string; docs: DocMe
   const groups: { section: string; docs: DocMeta[] }[] = [];
   for (const doc of await getDocs()) {
     const section = doc.section ?? "Docs";
-    let group = groups.find((g) => g.section === section);
+    // Group case-insensitively so "Platform" and "platform" don't fragment into
+    // two columns; the first-seen label wins (docs arrive section-sorted, so the
+    // Title-Case form sorts first).
+    let group = groups.find((g) => g.section.toLowerCase() === section.toLowerCase());
     if (!group) {
       group = { section, docs: [] };
       groups.push(group);
@@ -90,4 +93,15 @@ export async function getDocsBySection(): Promise<{ section: string; docs: DocMe
     group.docs.push(doc);
   }
   return groups;
+}
+
+/**
+ * Product docs grouped by section, excluding the handbook (which has its own
+ * surface at /handbook). This is the "All docs" taxonomy: the grid on the docs
+ * landing and the sidebar on doc pages both read it, so they always agree.
+ */
+export async function getProductDocsBySection(): Promise<{ section: string; docs: DocMeta[] }[]> {
+  return (await getDocsBySection())
+    .map((g) => ({ ...g, docs: g.docs.filter((d) => !d.slug.startsWith("handbook/")) }))
+    .filter((g) => g.docs.length > 0);
 }
