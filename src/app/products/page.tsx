@@ -9,21 +9,21 @@ import { Cta } from "@/components/cta";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Flagon is the source of truth for your organization's products and teams: defined once, kept in sync with the tools you already use, and held to a standard, crafted, open, priced without games, and built in public.",
+    "Flagon is an AI-native platform for operating your whole system: connect your tools, operate them with AI over your real data, and drive everything from the dashboard, an assistant, or the API. Open source, self-hostable, and built in public.",
 };
 
 const PILLARS: { title: string; body: string }[] = [
   {
-    title: "Products",
-    body: "Define a product once, with everything true about it in one place, instead of smeared across five tools that each disagree.",
+    title: "Your system, connected",
+    body: "Bring your projects, teams, and the tools around them into one place, with shared context across all of it, instead of a slice of the truth in each dashboard.",
   },
   {
-    title: "Teams",
-    body: "Teams, membership, and ownership as real, queryable objects, not a wiki page that went stale back in March.",
+    title: "Operate with AI",
+    body: "Ask in plain language and act on the answer. The assistant and agents work over your real data with your permissions. Reads run; changes are proposed for you to confirm.",
   },
   {
-    title: "Sync, both ways",
-    body: "Your definitions stay true in the systems you already use, pulled in and pushed back out, so nothing drifts.",
+    title: "One surface, everywhere",
+    body: "The dashboard, the assistant, the API, and MCP all drive the same permission-checked operations. Click it, ask it, script it, or point an agent at it.",
   },
 ];
 
@@ -57,18 +57,18 @@ export default function ProductsPage() {
             <FlagonPour className="relative h-32 w-32 sm:h-40 sm:w-40" />
           </div>
           <h1 className="mt-8 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
-            The source of truth for your products and teams.
+            The platform for your whole system.
           </h1>
           <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Flagon is where your organization defines its products, its teams,
-            and who owns what, then keeps all of it in sync with the tools that
-            structure already lives in. One place that&rsquo;s true, that
-            everything else agrees with.
+            Flagon brings your tools into one place you can operate and reason
+            about, with AI there when you want it. Connect your system, understand
+            what&rsquo;s happening across it, and act on it, from the dashboard,
+            the API, or an AI assistant.
           </p>
           <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
-            <Cta href="/roadmap">See the roadmap</Cta>
-            <Cta href="/handbook/who-we-build-for" variant="secondary">
-              Who we build for
+            <Cta href="/docs">Explore the docs</Cta>
+            <Cta href="/roadmap" variant="secondary">
+              See the roadmap
             </Cta>
           </div>
         </section>
@@ -76,8 +76,8 @@ export default function ProductsPage() {
         {/* Pillars */}
         <Section divider>
           <SectionHeader
-            title="One place, kept in sync"
-            lead="Define the shape of your organization once, and keep it true everywhere it needs to be."
+            title="One system, run with AI"
+            lead="Connect the tools your work already lives in, then operate the whole thing, and let AI act on it, over your real data, safely."
           />
           <Schematic bleed className="mt-10">
             <SchematicGrid cols={3}>
@@ -120,9 +120,9 @@ export default function ProductsPage() {
               read exactly who we&rsquo;re building it for.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Cta href="/roadmap">See the roadmap</Cta>
-              <Cta href="/handbook/which-products-to-build" variant="secondary">
-                How we decide what to build
+              <Cta href="/docs">Explore the docs</Cta>
+              <Cta href="/roadmap" variant="secondary">
+                See the roadmap
               </Cta>
             </div>
           </div>

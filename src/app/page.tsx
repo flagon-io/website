@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Frame } from "@/components/frame";
@@ -8,6 +9,10 @@ import { Section, SectionHeader, GUTTER } from "@/components/section";
 import { Cta } from "@/components/cta";
 import { site } from "@/lib/site";
 import { getAllPosts, formatDate } from "@/lib/blog";
+
+export const metadata: Metadata = {
+  description: site.description,
+};
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
@@ -26,9 +31,9 @@ export default function Home() {
           className="rise mt-8 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl"
           style={{ animationDelay: "120ms" }}
         >
-          Good software,{" "}
+          Your whole system,{" "}
           <span className="bg-linear-to-r from-brand-bright to-brand bg-clip-text text-transparent">
-            on tap.
+            in one place.
           </span>
         </h1>
 
@@ -36,48 +41,60 @@ export default function Home() {
           className="rise mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg"
           style={{ animationDelay: "180ms" }}
         >
-          We make software, and we&rsquo;re building the company we always wanted
-          to work for. A small crew of misfits, a handbook anyone can read, and a
-          long game we mean to play. All of it public, because a company you can
-          read is a company you can trust.
+          Flagon is the developer platform for everything you build and run:
+          projects, tools, and teams in one place you operate from the dashboard
+          or the API. AI is wired through all of it, for when you want it.
+          Powerful with AI, great without it. Open source, and built in the open.
         </p>
 
         <div
           className="rise mt-9 flex flex-col items-center gap-3 sm:flex-row"
           style={{ animationDelay: "240ms" }}
         >
-          <Cta href="/handbook">Read the handbook</Cta>
-          <Cta href="/blog" variant="secondary">
-            Read the blog
+          <Cta href="/docs">Explore the docs</Cta>
+          <Cta href="/handbook" variant="secondary">
+            Read the handbook
           </Cta>
         </div>
       </section>
 
-      {/* The bet */}
+      {/* What Flagon is */}
       <Section divider>
         <SectionHeader
-          title="Most software is built behind a curtain. We pulled ours down."
-          lead="Handbooks, roadmaps, the messy decisions in between. Companies keep all of it hidden, then wonder why nobody trusts them. We decided the whole thing should be readable, so it is."
+          title="One place for your whole system."
+          lead="Your work is spread across a dozen tools that each know a slice of the picture. Flagon pulls it together into one system you can operate however you like, click it, script it, or ask for it."
         />
         <Schematic bleed className="mt-10">
           <SchematicGrid cols={3}>
             <Pillar
-              title="Open by default"
-              body="Our handbook is public. Our reasoning is public. When we get something wrong, that's public too. If we can't say it out loud, we probably shouldn't be doing it."
+              title="One system, not twelve"
+              body="Your projects, teams, and the tools around them, in one place you can actually operate, instead of smeared across a dozen dashboards that each disagree."
             />
             <Pillar
-              title="A crew of misfits"
-              body="We're not assembling a machine. We're a small group of people who care about craft, allergic to pretense, and happier shipping one genuinely good thing than ten that are fine."
+              title="Operate it your way"
+              body="A fast dashboard, a real API, and MCP, all driving the same operations. Prefer to ask? The assistant works over your data with your permissions. Great with AI, and great without it."
             />
             <Pillar
-              title="The long game"
-              body="No quick exit, no growth-at-all-costs. Flagon exists to keep making useful software, in public, for as long as it's worth doing."
+              title="Open and yours"
+              body="Open source and self-hostable, end to end. Your infrastructure, your data, no lock-in. Leaving is always an option, which is exactly why you won't want to."
             />
           </SchematicGrid>
         </Schematic>
+        <div className="mt-8 px-6 sm:px-8">
+          <Link
+            href="/docs/get-started/introduction"
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand"
+          >
+            See what Flagon is, and where it&rsquo;s going
+            <ArrowRight
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+              strokeWidth={2}
+            />
+          </Link>
+        </div>
       </Section>
 
-      {/* How we operate */}
+      {/* Built in the open (identity) */}
       <Section divider>
         <div className={`grid gap-10 ${GUTTER} lg:grid-cols-[1.2fr_1fr] lg:items-center`}>
           <div className="max-w-2xl">
@@ -85,10 +102,10 @@ export default function Home() {
               A company you can read.
             </h2>
             <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-              How we work isn&rsquo;t a secret we protect. It&rsquo;s a handbook
-              you can open, argue with, and hold us to. The way we decide, what
-              we value, how we pay people: it&rsquo;s written down in public,
-              because the alternative is asking you to take our word for it.
+              We build the whole thing in public. How we work, what we decide, how
+              we pay people, and where the product is headed: it&rsquo;s a handbook
+              and a roadmap you can open, argue with, and hold us to. No big
+              reveal, no roadmap of maybes. You watch it get made.
             </p>
             <div className="mt-6">
               <Link
@@ -163,14 +180,14 @@ export default function Home() {
       <Section divider className="text-center">
         <div className={GUTTER}>
           <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-            It&rsquo;s all in the open.
+            Come build with us.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-pretty text-muted-foreground">
-            Read the handbook, follow the blog, or jump into Discord and tell us
-            what you wish existed.
+            Start with the docs, read the handbook, or jump into Discord and tell
+            us what you wish existed. It&rsquo;s all in the open.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Cta href="/handbook">Read the handbook</Cta>
+            <Cta href="/docs">Explore the docs</Cta>
             <Cta href={site.links.discord} external variant="secondary">
               Join the Discord
             </Cta>

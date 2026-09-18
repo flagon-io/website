@@ -1,12 +1,13 @@
 import "server-only";
 import { getHandbookSections } from "@/lib/handbook";
+import { getProductDocsBySection } from "@/lib/docs";
 import { getAllPosts } from "@/lib/blog";
 
 /** One searchable entry in the site-wide command palette. */
 export type SearchDoc = {
   title: string;
   url: string;
-  group: "Pages" | "Handbook" | "Blog";
+  group: "Pages" | "Docs" | "Handbook" | "Blog";
   section?: string;
   description?: string;
 };
@@ -28,6 +29,18 @@ const PAGES: SearchDoc[] = [
 
 /** The full index: pages, every handbook page, and every blog post. */
 export async function getSearchIndex(): Promise<SearchDoc[]> {
+  const docs: SearchDoc[] = (await getProductDocsBySection()).flatMap((g) =>
+    g.docs
+      .filter((d) => d.status !== "planned")
+      .map((d) => ({
+        title: d.title,
+        url: `/docs/${d.slug}`,
+        group: "Docs" as const,
+        section: g.section,
+        description: d.description,
+      })),
+  );
+
   const handbook: SearchDoc[] = (await getHandbookSections()).flatMap((s) =>
     s.pages.map((p) => ({
       title: p.title,
@@ -45,5 +58,5 @@ export async function getSearchIndex(): Promise<SearchDoc[]> {
     description: p.description,
   }));
 
-  return [...PAGES, ...handbook, ...blog];
+  return [...PAGES, ...docs, ...handbook, ...blog];
 }

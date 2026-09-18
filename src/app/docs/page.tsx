@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Rocket, Compass, Server } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Rocket,
+  Compass,
+  Server,
+  Sparkles,
+} from "lucide-react";
 import { SiGithub, SiDiscord } from "@icons-pack/react-simple-icons";
-import { Frame } from "@/components/frame";
-import { DocsSearch } from "@/components/docs-search";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { buttonClasses } from "@/components/button";
 import { getProductDocsBySection } from "@/lib/docs";
 import { site } from "@/lib/site";
@@ -11,13 +18,13 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Docs",
   description:
-    "Product documentation for Flagon: build, deploy, and operate your projects, drivable from the dashboard, the assistant, or the API.",
+    "Documentation for Flagon, the developer platform for operating your whole system, from the dashboard, the API, or an AI assistant.",
 };
 
 const FEATURED = [
   {
     title: "Introduction",
-    body: "What Flagon is, what you can do with it, and how the pieces fit.",
+    body: "What Flagon is, what you can do with it, and where it's going.",
     href: "/docs/get-started/introduction",
     icon: Compass,
   },
@@ -35,23 +42,39 @@ const FEATURED = [
   },
 ];
 
+const PROMPTS = [
+  "What changed across my projects this week?",
+  "Create a project called billing-api",
+  "Which members have admin on this org?",
+];
+
 export default async function DocsPage() {
   const all = await getProductDocsBySection();
-  // Open source gets its own strip below; keep it out of the product grid.
   const grid = all.filter((g) => g.section.toLowerCase() !== "open source");
 
   return (
-    <Frame>
-      <main>
-        {/* Hero: what it is, the two first moves, and search. */}
-        <section className="border-b border-hairline px-6 py-16 sm:px-8 sm:py-20">
-          <div className="mx-auto max-w-3xl">
-            <h1 className="text-balance text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-              Build on {site.name}
+    <div className="relative flex flex-1 flex-col">
+      <a
+        href="#content"
+        className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:left-4 focus-visible:top-3 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-primary focus-visible:px-4 focus-visible:py-2 focus-visible:text-sm focus-visible:font-medium focus-visible:text-primary-foreground"
+      >
+        Skip to content
+      </a>
+      <SiteHeader />
+
+      <main id="content" tabIndex={-1} className="outline-none">
+        {/* Hero: full-bleed band, product-first, with search. */}
+        <section className="border-b border-hairline bg-linear-to-b from-panel/40 to-transparent">
+          <div className="mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-24">
+            <p className="font-mono text-[11px] uppercase tracking-widest text-subtle">
+              Documentation
+            </p>
+            <h1 className="mt-4 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+              Build and operate your whole system.
             </h1>
-            <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
-              Everything you need to build, deploy, and operate your projects, from the dashboard,
-              the assistant, or the API. Written next to the code, so it&rsquo;s always current.
+            <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
+              {site.name} is the developer platform for everything you build and run: operate it
+              from the dashboard, the API, or an AI assistant. Powerful with AI, great without it.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/docs/get-started/quickstart" className={buttonClasses({ size: "lg" })}>
@@ -65,15 +88,50 @@ export default async function DocsPage() {
                 Introduction
               </Link>
             </div>
-            <div className="mt-10">
-              <DocsSearch />
-            </div>
+            <p className="mt-6 text-sm text-subtle">
+              Looking for something? Press{" "}
+              <kbd className="rounded border border-hairline bg-panel px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                ⌘K
+              </kbd>{" "}
+              to search the docs, handbook, and more.
+            </p>
           </div>
         </section>
 
-        {/* Start here: the pages most people want first. */}
-        <section className="border-b border-hairline px-6 py-14 sm:px-8">
-          <div className="mx-auto max-w-6xl">
+        {/* Operate by asking: sells the AI-hub value with real example prompts. */}
+        <section className="border-b border-hairline bg-panel/30">
+          <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-brand" strokeWidth={2} aria-hidden />
+              <h2 className="text-2xl font-semibold tracking-tight">Operate by asking</h2>
+            </div>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              The assistant works over your real data, with your permissions. Reads run; changes are
+              proposed for you to confirm. It gets more powerful as you connect more of your system.
+            </p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {PROMPTS.map((p) => (
+                <div
+                  key={p}
+                  className="rounded-xl border border-hairline bg-card p-4 font-mono text-[13px] leading-relaxed text-muted-foreground"
+                >
+                  <span className="text-brand">&gt;</span> {p}
+                </div>
+              ))}
+            </div>
+            <Link
+              href="/docs/ai/assistant"
+              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:underline"
+            >
+              About the assistant
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </Link>
+          </div>
+        </section>
+
+        {/* Start here. */}
+        <section className="border-b border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
             <h2 className="text-2xl font-semibold tracking-tight">Start here</h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURED.map((c) => {
@@ -96,13 +154,13 @@ export default async function DocsPage() {
           </div>
         </section>
 
-        {/* All docs: every product category and its pages. */}
-        <section className="px-6 py-14 sm:px-8">
-          <div className="mx-auto max-w-6xl">
+        {/* All docs: a bordered grid of every category, in curated order. */}
+        <section className="border-b border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
             <h2 className="text-2xl font-semibold tracking-tight">All docs</h2>
-            <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="mt-10 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {grid.map((col) => (
-                <div key={col.section}>
+                <div key={col.section} className="border-b border-r border-hairline p-6">
                   <h3 className="font-mono text-[11px] uppercase tracking-widest text-subtle">
                     {col.section}
                   </h3>
@@ -130,18 +188,15 @@ export default async function DocsPage() {
         </section>
 
         {/* Open source & community: a dedicated corner, not the framing. */}
-        <section className="border-t border-hairline px-6 py-14 sm:px-8">
-          <div className="mx-auto max-w-6xl">
+        <section className="border-b border-hairline">
+          <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
             <h2 className="text-lg font-semibold tracking-tight">Open source &amp; community</h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              {site.name} is open source and built in the open. Read the source, run it yourself,
-              or help shape where it goes.
+              {site.name} is open source and built in the open. Read the source, run it yourself, or
+              help shape where it goes.
             </p>
             <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm">
-              <Link
-                href="/docs/open-source/contributing"
-                className="text-link transition hover:text-brand"
-              >
+              <Link href="/docs/open-source/contributing" className="text-link transition hover:text-brand">
                 Contributing
               </Link>
               <Link href="/handbook" className="text-link transition hover:text-brand">
@@ -171,6 +226,8 @@ export default async function DocsPage() {
           </div>
         </section>
       </main>
-    </Frame>
+
+      <SiteFooter />
+    </div>
   );
 }

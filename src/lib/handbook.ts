@@ -81,6 +81,20 @@ function pageSlug(corpusSlug: string): string {
   return corpusSlug.slice(PREFIX.length);
 }
 
+/**
+ * The category folder a handbook page's source file lives in, derived from its
+ * section. Handbook pages are grouped into docs/handbook/<category>/<page>.mdx in
+ * the product repo but keep a flat URL, so this reconstructs the folder for
+ * "edit on GitHub" links. Must match how the files are grouped there.
+ */
+export function sectionDir(section: string): string {
+  return section
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 function toMeta(d: DocMeta): HandbookMeta {
   return {
     slug: pageSlug(d.slug),

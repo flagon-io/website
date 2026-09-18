@@ -92,7 +92,7 @@ export const site = {
   url: "https://www.flagon.io",
   tagline: "We build software in the open.",
   description:
-    "Flagon makes software, in the open. We're building the company we always wanted to work for: run by a public handbook, honest about how it works, priced without games, and here for the long haul. A company you can read is a company you can trust.",
+    "Flagon is a developer platform for operating your whole system: your projects, tools, and teams in one place, driven from the dashboard, the API, or an AI assistant. Powerful with AI, great without it. Open source, self-hostable, and built in the open.",
   links,
   nav,
 } as const;

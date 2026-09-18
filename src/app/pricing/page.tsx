@@ -241,7 +241,7 @@ export default function PricingPage() {
             lead="There's no plan to pick. You're on the free tier until you add a card, and adding one turns on pay-as-you-go with a ceiling you set. A couple of features that cost us real money ask for a card before you start, the same as most tools, but the core product doesn't."
           />
           <div className={`mt-10 ${GUTTER}`}>
-            <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr] lg:gap-2">
+            <div className="grid gap-4 lg:grid-cols-3 lg:items-stretch">
               <PlanCard
                 label="No card needed"
                 name="Free"
@@ -257,7 +257,6 @@ export default function PricingPage() {
                 note="The limits are fixed and can't be blown past, so a free account can't run up a bill."
                 cta={{ label: "Start for free", href: site.links.signup }}
               />
-              <Connector />
               <PlanCard
                 label="Once you add a card"
                 name="Pay-as-you-go"
@@ -273,6 +272,19 @@ export default function PricingPage() {
                 ]}
                 note="You pick the spend cap. Going viral turns into a bigger number you chose, never a surprise."
                 cta={{ label: "Start for free", href: site.links.signup }}
+              />
+              <PlanCard
+                label="For large orgs"
+                name="Enterprise"
+                price="Custom"
+                soon
+                tagline="SLAs, dedicated support, and single-tenant deployments, for when you need them. Not on deck yet, coming as we grow."
+                features={[
+                  "SLAs and dedicated support",
+                  "Single-tenant deployment",
+                  "Priority security review",
+                  "Custom terms and procurement",
+                ]}
               />
             </div>
           </div>
@@ -428,38 +440,60 @@ function PlanCard({
   note,
   cta,
   featured = false,
+  soon = false,
 }: {
   label: string;
   name: string;
   price: string;
   tagline: string;
   features: string[];
-  note: string;
-  cta: { label: string; href: string };
+  note?: string;
+  cta?: { label: string; href: string };
   featured?: boolean;
+  /** A plan that isn't available yet: muted, dashed, with a "Coming later" mark. */
+  soon?: boolean;
 }) {
   return (
     <div
       className={cn(
         "flex flex-col rounded-xl border p-6 sm:p-8",
-        featured ? "border-brand/30 bg-panel/50" : "border-hairline bg-card",
+        soon
+          ? "border-dashed border-hairline bg-panel/30"
+          : featured
+            ? "border-brand/30 bg-panel/50"
+            : "border-hairline bg-card",
       )}
     >
       <div className="flex items-center gap-2">
-        <span
-          className={cn(
-            "h-1.5 w-1.5 shrink-0 rounded-full",
-            featured ? "bg-brand" : "border border-subtle",
-          )}
-          aria-hidden
-        />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-subtle">
-          {label}
-        </span>
+        {soon ? (
+          <span className="rounded-full border border-hairline px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-subtle">
+            Coming later
+          </span>
+        ) : (
+          <>
+            <span
+              className={cn(
+                "h-1.5 w-1.5 shrink-0 rounded-full",
+                featured ? "bg-brand" : "border border-subtle",
+              )}
+              aria-hidden
+            />
+            <span className="font-mono text-[11px] uppercase tracking-widest text-subtle">
+              {label}
+            </span>
+          </>
+        )}
       </div>
 
       <div className="mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <h3 className="text-xl font-semibold tracking-tight">{name}</h3>
+        <h3
+          className={cn(
+            "text-xl font-semibold tracking-tight",
+            soon && "text-muted-foreground",
+          )}
+        >
+          {name}
+        </h3>
         <span className="text-sm text-subtle">{price}</span>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -470,7 +504,10 @@ function PlanCard({
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm">
             <Check
-              className="mt-0.5 h-4 w-4 shrink-0 text-brand"
+              className={cn(
+                "mt-0.5 h-4 w-4 shrink-0",
+                soon ? "text-subtle" : "text-brand",
+              )}
               strokeWidth={2.5}
             />
             <span className="text-muted-foreground">{f}</span>
@@ -478,35 +515,27 @@ function PlanCard({
         ))}
       </ul>
 
-      <p className="mt-6 border-t border-hairline pt-4 text-xs leading-relaxed text-subtle">
-        {note}
-      </p>
+      {note ? (
+        <p className="mt-6 border-t border-hairline pt-4 text-xs leading-relaxed text-subtle">
+          {note}
+        </p>
+      ) : null}
 
       <div className="mt-6">
-        <Cta
-          href={cta.href}
-          external
-          variant={featured ? "primary" : "secondary"}
-          className="w-full"
-        >
-          {cta.label}
-        </Cta>
-      </div>
-    </div>
-  );
-}
-
-/** The bridge between the free card and the pay-as-you-go card. */
-function Connector() {
-  return (
-    <div className="flex items-center justify-center py-1 lg:px-1">
-      <div className="flex items-center gap-2 rounded-full border border-hairline bg-card px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-subtle">
-          Add a card
-        </span>
-        <span aria-hidden className="text-brand max-lg:rotate-90">
-          &rarr;
-        </span>
+        {cta ? (
+          <Cta
+            href={cta.href}
+            external
+            variant={featured ? "primary" : "secondary"}
+            className="w-full"
+          >
+            {cta.label}
+          </Cta>
+        ) : (
+          <div className="w-full rounded-md border border-dashed border-hairline px-4 py-2 text-center text-sm text-subtle">
+            Coming as we grow
+          </div>
+        )}
       </div>
     </div>
   );

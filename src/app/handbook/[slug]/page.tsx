@@ -8,6 +8,7 @@ import { HandbookUnavailable } from "@/components/handbook-unavailable";
 import {
   getHandbookPage,
   getHandbookOrder,
+  sectionDir,
 } from "@/lib/handbook";
 import { extractToc } from "@/lib/toc";
 
@@ -74,10 +75,12 @@ export default async function HandbookPage({
           </div>
         </article>
 
-        {/* edit link */}
+        {/* edit link. Handbook pages are grouped into category folders in the
+            product repo (docs/handbook/<category>/<page>.mdx) while keeping a flat
+            URL, so the source path folds the category back in from the section. */}
         <div className="mt-12 max-w-2xl border-t border-hairline pt-6">
           <a
-            href={`https://github.com/flagon-io/flagon/blob/main/docs/handbook/${slug}.mdx`}
+            href={`https://github.com/flagon-io/flagon/blob/main/docs/handbook/${sectionDir(page.section)}/${slug}.mdx`}
             target="_blank"
             rel="noreferrer"
             className="font-mono text-[11px] uppercase tracking-widest text-subtle transition hover:text-foreground"

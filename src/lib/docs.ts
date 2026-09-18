@@ -98,12 +98,42 @@ export async function getDocsBySection(): Promise<{ section: string; docs: DocMe
 }
 
 /**
- * Product docs grouped by section, excluding the handbook (which has its own
- * surface at /handbook). This is the "All docs" taxonomy: the grid on the docs
- * landing and the sidebar on doc pages both read it, so they always agree.
+ * Curated order for the "All docs" categories: a deliberate reading order (Get
+ * started first, then the platform, the AI/agent surface, then reference and
+ * operations), rather than alphabetical. Sections not listed here fall to the end
+ * in alphabetical order, so a new category still appears without a code change.
+ */
+const DOCS_SECTION_ORDER = [
+  "Get started",
+  "Platform",
+  "Deploying",
+  "Context",
+  "Agents",
+  "AI",
+  "MCP hub",
+  "Skills",
+  "Metrics",
+  "Observability",
+  "API",
+  "CLI",
+  "Governance",
+  "Self hosting",
+];
+
+function sectionRank(section: string): number {
+  const i = DOCS_SECTION_ORDER.findIndex((s) => s.toLowerCase() === section.toLowerCase());
+  return i < 0 ? DOCS_SECTION_ORDER.length : i;
+}
+
+/**
+ * Product docs grouped by section in curated order, excluding the handbook
+ * (which has its own surface at /handbook). This is the "All docs" taxonomy: the
+ * grid on the docs landing and the sidebar on doc pages both read it, so they
+ * always agree.
  */
 export async function getProductDocsBySection(): Promise<{ section: string; docs: DocMeta[] }[]> {
   return (await getDocsBySection())
     .map((g) => ({ ...g, docs: g.docs.filter((d) => !d.slug.startsWith("handbook/")) }))
-    .filter((g) => g.docs.length > 0);
+    .filter((g) => g.docs.length > 0)
+    .sort((a, b) => sectionRank(a.section) - sectionRank(b.section) || a.section.localeCompare(b.section));
 }

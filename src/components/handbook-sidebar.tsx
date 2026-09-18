@@ -1,46 +1,38 @@
-"use client";
+import { Sidebar, SidebarNav, type SidebarGroup } from "@/components/sidebar";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
-import { ChevronDown } from "lucide-react";
-import { HandbookNav, type HandbookNavData } from "@/components/handbook-nav";
-import { cn } from "@/lib/cn";
+type HandbookCategoryNav = {
+  name: string | null;
+  sections: { name: string; soon?: boolean; pages: { slug: string; title: string }[] }[];
+}[];
 
 /**
- * Handbook sidebar. On desktop the nav is always shown (the `lg:` classes win).
- * On mobile it collapses behind a toggle so 50-odd links don't bury the page,
- * and it closes itself again on navigation.
+ * Handbook sidebar: maps the two-level handbook nav into the shared Sidebar.
+ * Numbered chapters, "Soon" department rows, and grouped categories, all rendered
+ * by the same component the docs use.
  */
-export function HandbookSidebar({ categories }: { categories: HandbookNavData }) {
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  // Close on navigation (adjust-during-render, no effect needed).
-  const [lastPath, setLastPath] = useState(pathname);
-  if (pathname !== lastPath) {
-    setLastPath(pathname);
-    setOpen(false);
-  }
+export function HandbookSidebar({ categories }: { categories: HandbookCategoryNav }) {
+  const groups: SidebarGroup[] = categories.map((c) => ({
+    name: c.name,
+    sections: c.sections.map((s) => ({
+      name: s.name,
+      disabled: s.soon,
+      badge: s.soon ? "Soon" : undefined,
+      items: s.pages.map((p, i) => ({
+        href: `/handbook/${p.slug}`,
+        title: p.title,
+        number: s.name === "Chapters" ? i + 1 : undefined,
+      })),
+    })),
+  }));
 
   return (
-    <div>
-      <div className="px-4 lg:hidden">
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          className="flex w-full items-center justify-between rounded-md border border-hairline bg-panel px-3 py-2 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-brand"
-        >
-          Browse the handbook
-          <ChevronDown
-            className={cn("h-4 w-4 text-subtle transition-transform", open && "rotate-180")}
-            strokeWidth={2}
-          />
-        </button>
-      </div>
-      <div className={cn("mt-4 lg:mt-0 lg:block", open ? "block" : "hidden")}>
-        <HandbookNav categories={categories} />
-      </div>
-    </div>
+    <Sidebar toggleLabel="Browse the handbook">
+      <SidebarNav
+        title="The Book of Flagon"
+        homeHref="/handbook"
+        homeLabel="Table of contents"
+        groups={groups}
+      />
+    </Sidebar>
   );
 }
