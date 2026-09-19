@@ -38,7 +38,7 @@ const TIERS: Tier[] = [
     features: [
       "The whole product, every feature",
       "Unlimited teammates, no per-seat fee",
-      "SSO, SAML, and SCIM, free",
+      "SSO and SAML, free",
       "Generous usage limits",
       "Community support in Discord",
     ],
@@ -118,7 +118,6 @@ const COMPARE: CompareGroup[] = [
         values: ["Advanced", "Advanced", "Advanced"],
       },
       { feature: "SSO and SAML", values: [true, true, true] },
-      { feature: "SCIM provisioning", values: [true, true, true] },
     ],
   },
   {
@@ -164,7 +163,7 @@ const PRINCIPLES: { title: string; body: string }[] = [
   },
   {
     title: "No security tax",
-    body: "SSO, SAML, SCIM, and self-hosting are free on every plan, including the free one. Security is not an upsell.",
+    body: "SSO, SAML, and self-hosting are free on every plan, including the free one. Security is not an upsell.",
   },
   {
     title: "Never per seat",
@@ -179,7 +178,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Do I have to pay for SSO?",
-    a: "No. SSO, SAML, and SCIM are free on every plan, including the free one. The 'SSO tax', where security is locked behind an enterprise upsell, is a dark pattern, and we're not doing it.",
+    a: "No. SSO and SAML are free on every plan, including the free one. The 'SSO tax', where security is locked behind an enterprise upsell, is a dark pattern, and we're not doing it.",
   },
   {
     q: "How does pay-as-you-go work?",
@@ -250,7 +249,7 @@ export default function PricingPage() {
                 features={[
                   "The whole product, every feature",
                   "One project, unlimited teammates",
-                  "SSO, SAML, and SCIM, free",
+                  "SSO and SAML, free",
                   "Short data retention window",
                   "Community support in Discord",
                 ]}
