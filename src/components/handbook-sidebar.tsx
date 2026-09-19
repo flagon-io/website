@@ -1,4 +1,4 @@
-import { Sidebar, SidebarNav, type SidebarGroup } from "@/components/sidebar";
+import { SidebarNav, type SidebarGroup } from "@/components/sidebar";
 
 type HandbookCategoryNav = {
   name: string | null;
@@ -26,13 +26,11 @@ export function HandbookSidebar({ categories }: { categories: HandbookCategoryNa
   }));
 
   return (
-    <Sidebar toggleLabel="Browse the handbook">
-      <SidebarNav
-        title="The Book of Flagon"
-        homeHref="/handbook"
-        homeLabel="Table of contents"
-        groups={groups}
-      />
-    </Sidebar>
+    <SidebarNav
+      title="The Book of Flagon"
+      homeHref="/handbook"
+      homeLabel="Table of contents"
+      groups={groups}
+    />
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -215,26 +215,75 @@ function SectionItem({
 }
 
 /**
- * Mobile-aware shell for a sidebar: shows the nav inline on desktop, and behind a
- * labelled toggle on small screens (closing on navigation). Wrap a <SidebarNav>.
+ * Small-screen docked nav: a bar that stays pinned just under the site header
+ * while the page scrolls, opening a <SidebarNav> as a dropdown panel beneath it.
+ * Hidden at `lg`, where the rail is shown inline instead.
+ *
+ * For the bar to stay docked across the whole article (not just the sidebar's own
+ * height), it must live in the tall grid container that spans nav + content — so
+ * layouts render this as the first grid child, with the inline rail as a sibling
+ * <aside> that only appears at `lg`. The panel is absolutely positioned against
+ * this sticky wrapper, so it drops from wherever the bar is currently docked.
  */
-export function Sidebar({ toggleLabel, children }: { toggleLabel: string; children: ReactNode }) {
+export function MobileSidebar({
+  toggleLabel,
+  children,
+}: {
+  toggleLabel: string;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
+  // Close when the route changes (a link was followed). Adjusting state during
+  // render on a changed value is the sanctioned pattern, no effect needed.
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
     setLastPath(pathname);
     setOpen(false);
   }
 
+  // While open: Escape to close, close on outside click, and lock the page
+  // behind the panel so it doesn't scroll under the dropdown.
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    const prev = root.style.overflow;
+    root.style.overflow = "hidden";
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    }
+    function onClick(e: MouseEvent) {
+      const t = e.target as Node;
+      if (!panelRef.current?.contains(t) && !buttonRef.current?.contains(t)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+      root.style.overflow = prev;
+    };
+  }, [open]);
+
   return (
-    <div>
-      <div className="px-4 lg:hidden">
+    <div className="sticky top-16.25 z-30 border-b border-hairline bg-background/80 backdrop-blur-md lg:hidden">
+      <div className="px-4 py-3">
         <button
+          ref={buttonRef}
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
+          aria-controls={panelId}
           className="flex w-full items-center justify-between rounded-md border border-hairline bg-panel px-3 py-2 text-sm font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-brand"
         >
           {toggleLabel}
@@ -244,7 +293,14 @@ export function Sidebar({ toggleLabel, children }: { toggleLabel: string; childr
           />
         </button>
       </div>
-      <div className={cn("mt-4 lg:mt-0 lg:block", open ? "block" : "hidden")}>{children}</div>
+      <div
+        id={panelId}
+        ref={panelRef}
+        hidden={!open}
+        className="absolute inset-x-0 top-full max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain border-b border-hairline bg-background shadow-xl shadow-black/30"
+      >
+        {children}
+      </div>
     </div>
   );
 }
