@@ -4,27 +4,41 @@ import { Section, SectionHeader, GUTTER } from "@/components/section";
 import { RoadmapBoard } from "@/components/roadmap-board";
 import { Cta } from "@/components/cta";
 import { site } from "@/lib/site";
+import { getRoadmap } from "@/lib/roadmap";
 
 export const metadata: Metadata = {
   title: "Roadmap",
   description:
-    "What Flagon is building, in the open. Right now that's the platform itself: a multi-tenant home for your products and teams, kept in sync with the tools you already use.",
+    "What Flagon is building, in the open: a multi-tenant platform in beta today, with products and teams, bidirectional sync, and a full developer surface on the way.",
 };
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const roadmap = await getRoadmap();
   return (
     <Frame>
       <main>
         <Section divider={false}>
           <SectionHeader
             title="What we're building, in the open"
-            lead="Right now that's the Flagon platform itself: a multi-tenant home for your products and teams that stays in sync with the systems those definitions already live in. It's a direction, not a set of dated promises, so it moves as we learn. Every item flows concept to alpha to beta, then leaves the board for the changelog."
+            lead="The platform foundation is in beta and running: multi-tenant organizations, access and security, a public API, and an AI assistant. Right now we're building out products and teams, and bidirectional sync with the systems your definitions already live in is what's next. It's a direction, not a set of dated promises, so it moves as we learn. Every item flows concept to alpha to beta, then leaves the board for the changelog once it's generally available."
           />
         </Section>
 
         <Section divider>
           <div className={GUTTER}>
-            <RoadmapBoard />
+            {roadmap.available ? (
+              <RoadmapBoard
+                items={roadmap.items}
+                stages={roadmap.stages}
+                teams={roadmap.teams}
+              />
+            ) : (
+              <p className="rounded-xl border border-hairline bg-panel/40 px-5 py-8 text-center text-sm text-muted-foreground">
+                The roadmap is currently unavailable. It loads live from the
+                Flagon API, which isn&rsquo;t answering right now. Please check
+                back in a moment.
+              </p>
+            )}
           </div>
         </Section>
 

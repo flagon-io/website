@@ -116,8 +116,9 @@ export async function listHandbookSlugs(): Promise<string[]> {
 }
 
 export async function getHandbookPage(slug: string): Promise<HandbookPage | null> {
-  const doc = await getDoc(`${PREFIX}${slug}`);
-  if (!doc) return null;
+  const lookup = await getDoc(`${PREFIX}${slug}`);
+  if (lookup.state !== "ok") return null;
+  const doc = lookup.doc;
   return {
     slug,
     title: doc.title,

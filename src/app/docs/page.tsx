@@ -73,11 +73,15 @@ export default async function DocsPage() {
               Build and operate your whole system.
             </h1>
             <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-              {site.name} is the developer platform for everything you build and run: operate it
-              from the dashboard, the API, or an AI assistant. Powerful with AI, great without it.
+              {site.name} is the developer platform for everything you build and
+              run: operate it from the dashboard, the API, or an AI assistant.
+              Powerful with AI, great without it.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/docs/get-started/quickstart" className={buttonClasses({ size: "lg" })}>
+              <Link
+                href="/docs/get-started/quickstart"
+                className={buttonClasses({ size: "lg" })}
+              >
                 Quickstart
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
@@ -102,12 +106,19 @@ export default async function DocsPage() {
         <section className="border-b border-hairline bg-panel/30">
           <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-brand" strokeWidth={2} aria-hidden />
-              <h2 className="text-2xl font-semibold tracking-tight">Operate by asking</h2>
+              <Sparkles
+                className="h-5 w-5 text-brand"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <h2 className="text-2xl font-semibold tracking-tight">
+                Operate by asking
+              </h2>
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              The assistant works over your real data, with your permissions. Reads run; changes are
-              proposed for you to confirm. It gets more powerful as you connect more of your system.
+              The assistant works over your real data, with your permissions.
+              Reads run; changes are proposed for you to confirm. It gets more
+              powerful as you connect more of your system.
             </p>
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {PROMPTS.map((p) => (
@@ -132,7 +143,9 @@ export default async function DocsPage() {
         {/* Start here. */}
         <section className="border-b border-hairline">
           <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
-            <h2 className="text-2xl font-semibold tracking-tight">Start here</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Start here
+            </h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURED.map((c) => {
                 const Icon = c.icon;
@@ -146,7 +159,9 @@ export default async function DocsPage() {
                     <h3 className="mt-4 text-base font-semibold tracking-tight group-hover:text-brand">
                       {c.title}
                     </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{c.body}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      {c.body}
+                    </p>
                   </Link>
                 );
               })}
@@ -158,48 +173,70 @@ export default async function DocsPage() {
         <section className="border-b border-hairline">
           <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
             <h2 className="text-2xl font-semibold tracking-tight">All docs</h2>
-            <div className="mt-10 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {grid.map((col) => (
-                <div key={col.section} className="border-b border-r border-hairline p-6">
-                  <h3 className="font-mono text-[11px] uppercase tracking-widest text-subtle">
-                    {col.section}
-                  </h3>
-                  <ul className="mt-4 flex flex-col gap-2.5">
-                    {col.docs.map((doc) => (
-                      <li key={doc.slug}>
-                        <Link
-                          href={`/docs/${doc.slug}`}
-                          className="inline-flex items-center gap-2 text-sm text-link transition hover:text-brand"
-                        >
-                          {doc.title}
-                          {doc.status === "planned" ? (
-                            <span className="rounded border border-hairline px-1 py-0.5 font-mono text-[9px] uppercase tracking-widest text-subtle">
-                              Soon
-                            </span>
-                          ) : null}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            {grid.length === 0 ? (
+              <p className="mt-8 max-w-2xl rounded-xl border border-hairline bg-panel/40 px-5 py-4 text-sm text-muted-foreground">
+                The full index is loading from the Flagon API. Browse the
+                highlights above, or press{" "}
+                <kbd className="rounded border border-hairline bg-panel px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                  ⌘K
+                </kbd>{" "}
+                to search.
+              </p>
+            ) : (
+              <div className="mt-10 grid grid-cols-1 border-l border-t border-hairline sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {grid.map((col) => (
+                  <div
+                    key={col.section}
+                    className="border-b border-r border-hairline p-6"
+                  >
+                    <h3 className="font-mono text-[11px] uppercase tracking-widest text-subtle">
+                      {col.section}
+                    </h3>
+                    <ul className="mt-4 flex flex-col gap-2.5">
+                      {col.docs.map((doc) => (
+                        <li key={doc.slug}>
+                          <Link
+                            href={`/docs/${doc.slug}`}
+                            className="inline-flex items-center gap-2 text-sm text-link transition hover:text-brand"
+                          >
+                            {doc.title}
+                            {doc.status === "planned" ? (
+                              <span className="rounded border border-hairline px-1 py-0.5 font-mono text-[9px] uppercase tracking-widest text-subtle">
+                                Soon
+                              </span>
+                            ) : null}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
         {/* Open source & community: a dedicated corner, not the framing. */}
         <section className="border-b border-hairline">
           <div className="mx-auto max-w-6xl px-6 py-14 sm:px-8">
-            <h2 className="text-lg font-semibold tracking-tight">Open source &amp; community</h2>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Open source &amp; community
+            </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              {site.name} is open source and built in the open. Read the source, run it yourself, or
-              help shape where it goes.
+              {site.name} is open source and built in the open. Read the source,
+              run it yourself, or help shape where it goes.
             </p>
             <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm">
-              <Link href="/docs/open-source/contributing" className="text-link transition hover:text-brand">
+              <Link
+                href="/docs/open-source/contributing"
+                className="text-link transition hover:text-brand"
+              >
                 Contributing
               </Link>
-              <Link href="/handbook" className="text-link transition hover:text-brand">
+              <Link
+                href="/handbook"
+                className="text-link transition hover:text-brand"
+              >
                 Handbook
               </Link>
               <a

@@ -54,6 +54,8 @@ export async function fetchSpec(): Promise<{ spec: Spec; reachable: boolean }> {
     const res = await fetch(UPSTREAM, {
       headers: { accept: "application/json" },
       next: { revalidate: REVALIDATE },
+      // A slow or hanging upstream must never stall the reference page or build.
+      signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) throw new Error(`upstream responded ${res.status}`);
     return { spec: (await res.json()) as Spec, reachable: true };
@@ -176,7 +178,10 @@ export type SecurityScheme = { name: string; scheme: JsonObject };
 export function securitySchemes(spec: Spec): SecurityScheme[] {
   const comps = asObject(asObject(spec.components)?.securitySchemes);
   if (!comps) return [];
-  return Object.entries(comps).map(([name, s]) => ({ name, scheme: asObject(s) ?? {} }));
+  return Object.entries(comps).map(([name, s]) => ({
+    name,
+    scheme: asObject(s) ?? {},
+  }));
 }
 
 export function globalSecurity(spec: Spec): JsonObject[] {
@@ -193,10 +198,15 @@ export function operationSecurityNames(spec: Spec, op: ApiOperation): string[] {
   return [...names];
 }
 
-export function schemaEntries(spec: Spec): { name: string; schema: JsonObject }[] {
+export function schemaEntries(
+  spec: Spec,
+): { name: string; schema: JsonObject }[] {
   const schemas = asObject(asObject(spec.components)?.schemas);
   if (!schemas) return [];
-  return Object.entries(schemas).map(([name, s]) => ({ name, schema: asObject(s) ?? {} }));
+  return Object.entries(schemas).map(([name, s]) => ({
+    name,
+    schema: asObject(s) ?? {},
+  }));
 }
 
 /** Flatten paths x methods into a single list of operations, in document order. */
@@ -206,11 +216,15 @@ export function listOperations(spec: Spec): ApiOperation[] {
   for (const [path, rawItem] of Object.entries(paths)) {
     const item = asObject(rawItem);
     if (!item) continue;
-    const shared = asArray(item.parameters).map(asObject).filter(Boolean) as JsonObject[];
+    const shared = asArray(item.parameters)
+      .map(asObject)
+      .filter(Boolean) as JsonObject[];
     for (const method of HTTP_METHODS) {
       const op = asObject(item[method]);
       if (!op) continue;
-      const own = asArray(op.parameters).map(asObject).filter(Boolean) as JsonObject[];
+      const own = asArray(op.parameters)
+        .map(asObject)
+        .filter(Boolean) as JsonObject[];
       operations.push({
         method,
         path,
@@ -269,7 +283,10 @@ export function groupByTag(spec: Spec): ApiTagGroup[] {
     }));
 }
 
-function primitiveExample(type: string | undefined, format: string | undefined): unknown {
+function primitiveExample(
+  type: string | undefined,
+  format: string | undefined,
+): unknown {
   switch (type) {
     case "integer":
     case "number":
@@ -320,20 +337,30 @@ export function exampleForSchema(
   if (s.example !== undefined) return s.example;
   if (s.default !== undefined) return s.default;
 
-  const allOf = asArray(s.allOf).map(asObject).filter((x): x is JsonObject => Boolean(x));
+  const allOf = asArray(s.allOf)
+    .map(asObject)
+    .filter((x): x is JsonObject => Boolean(x));
   if (allOf.length) {
     const merged: Record<string, unknown> = {};
     for (const part of allOf) {
       const ex = exampleForSchema(spec, part, new Set(seen), depth + 1);
-      if (ex && typeof ex === "object" && !Array.isArray(ex)) Object.assign(merged, ex);
+      if (ex && typeof ex === "object" && !Array.isArray(ex))
+        Object.assign(merged, ex);
     }
     for (const [k, v] of Object.entries(asObject(s.properties) ?? {})) {
-      merged[k] = exampleForSchema(spec, asObject(v) ?? {}, new Set(seen), depth + 1);
+      merged[k] = exampleForSchema(
+        spec,
+        asObject(v) ?? {},
+        new Set(seen),
+        depth + 1,
+      );
     }
     return merged;
   }
 
-  const variants = asArray(s.oneOf).length ? asArray(s.oneOf) : asArray(s.anyOf);
+  const variants = asArray(s.oneOf).length
+    ? asArray(s.oneOf)
+    : asArray(s.anyOf);
   if (variants.length) {
     const first = asObject(variants[0]);
     if (first) return exampleForSchema(spec, first, new Set(seen), depth + 1);
@@ -346,7 +373,12 @@ export function exampleForSchema(
   if (type === "object" || props) {
     const obj: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(props ?? {})) {
-      obj[k] = exampleForSchema(spec, asObject(v) ?? {}, new Set(seen), depth + 1);
+      obj[k] = exampleForSchema(
+        spec,
+        asObject(v) ?? {},
+        new Set(seen),
+        depth + 1,
+      );
     }
     return obj;
   }

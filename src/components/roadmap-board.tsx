@@ -14,14 +14,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import {
-  ROADMAP,
-  STAGE_META,
-  STAGE_ORDER,
-  roadmapTeams,
-  type RoadmapItem,
-  type Stage,
-} from "@/lib/roadmap";
+import type { RoadmapItem, Stage, StageInfo } from "@/lib/roadmap";
 
 const STAGE_ICON: Record<Stage, LucideIcon> = {
   concept: Lightbulb,
@@ -30,24 +23,54 @@ const STAGE_ICON: Record<Stage, LucideIcon> = {
 };
 
 /**
- * The public roadmap board: stage columns (concept / alpha / beta) with
- * client-side search and a team filter. Cards open a detail dialog. Reads
- * straight from the ROADMAP data, so keeping it current is editing that array.
+ * Icons are inherently client-side, so the column order and per-stage
+ * presentation live here as a fallback. The API provides matching stage labels
+ * and blurbs (see /lib/roadmap); those win when present, but keeping a built-in
+ * copy means the columns still render if the API is briefly unavailable.
  */
-export function RoadmapBoard() {
+const STAGE_ORDER: Stage[] = ["concept", "alpha", "beta"];
+
+const STAGE_FALLBACK: Record<Stage, { label: string; blurb: string }> = {
+  concept: {
+    label: "Concept",
+    blurb: "Committed to building, still taking shape.",
+  },
+  alpha: { label: "Alpha", blurb: "An early build, rough and moving fast." },
+  beta: { label: "Beta", blurb: "Ready to try, close to done." },
+};
+
+/**
+ * The public roadmap board: stage columns (concept / alpha / beta) with
+ * client-side search and a team filter. Cards open a detail dialog. The items,
+ * teams, and stage metadata are fetched from the API by the server component and
+ * passed in, so this holds no copy of the roadmap and cannot drift.
+ */
+export function RoadmapBoard({
+  items,
+  stages,
+  teams,
+}: {
+  items: RoadmapItem[];
+  stages: StageInfo[];
+  teams: string[];
+}) {
   const [query, setQuery] = useState("");
   const [team, setTeam] = useState("all");
   const [selected, setSelected] = useState<RoadmapItem | null>(null);
-  const teams = useMemo(() => roadmapTeams(), []);
+
+  const stageMeta = useMemo(() => {
+    const byStage = new Map(stages.map((s) => [s.stage, s]));
+    return (stage: Stage) => byStage.get(stage) ?? STAGE_FALLBACK[stage];
+  }, [stages]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return ROADMAP.filter((item) => {
+    return items.filter((item) => {
       if (team !== "all" && item.team !== team) return false;
       if (!q) return true;
       return `${item.title} ${item.team}`.toLowerCase().includes(q);
     });
-  }, [query, team]);
+  }, [items, query, team]);
 
   return (
     <div>
@@ -88,14 +111,14 @@ export function RoadmapBoard() {
           />
         </div>
         <p className="font-mono text-[11px] uppercase tracking-widest text-subtle sm:ml-2">
-          {filtered.length} of {ROADMAP.length}
+          {filtered.length} of {items.length}
         </p>
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         {STAGE_ORDER.map((stage) => {
           const items = filtered.filter((i) => i.stage === stage);
-          const meta = STAGE_META[stage];
+          const meta = stageMeta(stage);
           const Icon = STAGE_ICON[stage];
           return (
             <section
@@ -105,21 +128,35 @@ export function RoadmapBoard() {
             >
               <div className="border-b border-hairline p-4">
                 <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-brand" strokeWidth={2} aria-hidden />
-                  <h2 className="text-sm font-semibold tracking-tight">{meta.label}</h2>
+                  <Icon
+                    className="h-4 w-4 text-brand"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <h2 className="text-sm font-semibold tracking-tight">
+                    {meta.label}
+                  </h2>
                   <span className="font-mono text-[11px] tabular-nums text-subtle">
                     {items.length}
                   </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{meta.blurb}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {meta.blurb}
+                </p>
               </div>
               <div className="flex flex-1 flex-col gap-2 p-3">
                 {items.length ? (
                   items.map((item) => (
-                    <Card key={item.title} item={item} onOpen={() => setSelected(item)} />
+                    <Card
+                      key={item.slug}
+                      item={item}
+                      onOpen={() => setSelected(item)}
+                    />
                   ))
                 ) : (
-                  <p className="px-2 py-8 text-center text-xs text-subtle">Nothing here yet.</p>
+                  <p className="px-2 py-8 text-center text-xs text-subtle">
+                    Nothing here yet.
+                  </p>
                 )}
               </div>
             </section>
@@ -134,7 +171,8 @@ export function RoadmapBoard() {
         <span className="text-sm">
           <span className="font-medium">What&rsquo;s just shipped?</span>{" "}
           <span className="text-muted-foreground">
-            Anything that reaches general availability leaves the board for the changelog.
+            Anything that reaches general availability leaves the board for the
+            changelog.
           </span>
         </span>
         <ArrowRight
@@ -157,7 +195,9 @@ function Card({ item, onOpen }: { item: RoadmapItem; onOpen: () => void }) {
       className="w-full rounded-lg border border-hairline bg-card p-3.5 text-left outline-none transition-colors hover:border-mark focus-visible:ring-2 focus-visible:ring-brand"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-medium leading-snug tracking-tight">{item.title}</h3>
+        <h3 className="text-sm font-medium leading-snug tracking-tight">
+          {item.title}
+        </h3>
         {item.tag ? (
           <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-brand">
             {item.tag}
@@ -169,8 +209,14 @@ function Card({ item, onOpen }: { item: RoadmapItem; onOpen: () => void }) {
   );
 }
 
-function ItemDialog({ item, onClose }: { item: RoadmapItem | null; onClose: () => void }) {
-  const stage = item ? STAGE_META[item.stage] : null;
+function ItemDialog({
+  item,
+  onClose,
+}: {
+  item: RoadmapItem | null;
+  onClose: () => void;
+}) {
+  const stage = item ? STAGE_FALLBACK[item.stage] : null;
   const StageIcon = item ? STAGE_ICON[item.stage] : null;
 
   return (
@@ -182,7 +228,11 @@ function ItemDialog({ item, onClose }: { item: RoadmapItem | null; onClose: () =
             <>
               <div className="flex flex-wrap items-center gap-2 pr-8">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand">
-                  <StageIcon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                  <StageIcon
+                    className="h-3.5 w-3.5"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                   {stage.label}
                 </span>
                 <span className="font-mono text-[11px] uppercase tracking-widest text-subtle">
@@ -207,8 +257,14 @@ function ItemDialog({ item, onClose }: { item: RoadmapItem | null; onClose: () =
               {item.includes?.length ? (
                 <ul className="mt-5 flex flex-col gap-2.5 border-t border-hairline pt-5">
                   {item.includes.map((point) => (
-                    <li key={point} className="flex items-start gap-2.5 text-sm">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" strokeWidth={2.5} />
+                    <li
+                      key={point}
+                      className="flex items-start gap-2.5 text-sm"
+                    >
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-brand"
+                        strokeWidth={2.5}
+                      />
                       <span className="text-muted-foreground">{point}</span>
                     </li>
                   ))}

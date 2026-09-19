@@ -1,17 +1,24 @@
+import "server-only";
+import { apiJson } from "./api";
+
 /**
- * The Flagon roadmap. Managing it is deliberately simple: every item is one
- * object in the ROADMAP array below. To move something as it progresses, change
- * its `stage`. To add something, add an object. To hand it to another team,
- * change its `team`. That's the whole workflow; the board re-groups, re-counts,
- * and re-filters itself.
+ * Client for the roadmap the API owns. The roadmap lives in the flagon repo
+ * (roadmap/), is compiled into a corpus embedded in the API, and served at
+ * /roadmap. This site is a pure client of that endpoint: it holds no copy of the
+ * items, so it can never drift from what the API actually has.
  *
- * Stages read left to right as it matures: concept -> alpha -> beta. Anything
- * that reaches general availability leaves the board and lands in the changelog.
+ * When the API can't be reached (down, or the endpoint not deployed yet), the
+ * page says the roadmap is currently unavailable rather than showing a stale
+ * baked-in copy. The request times out (see ./api) so a slow API can't stall a
+ * render or the build.
+ *
+ * Mirrors src/lib/docs.ts and src/lib/changelog.ts.
  */
 
 export type Stage = "concept" | "alpha" | "beta";
 
 export type RoadmapItem = {
+  slug: string;
   title: string;
   stage: Stage;
   /** The team that owns it (also what the board filters by). */
@@ -22,40 +29,32 @@ export type RoadmapItem = {
   summary?: string;
   /** Optional "what it covers" points, shown in the card detail. */
   includes?: string[];
+  order?: number;
 };
 
-export const STAGE_META: Record<Stage, { label: string; blurb: string }> = {
-  concept: { label: "Concept", blurb: "Committed to building, still taking shape." },
-  alpha: { label: "Alpha", blurb: "An early build, rough and moving fast." },
-  beta: { label: "Beta", blurb: "Ready to try, close to done." },
+/** A stage column's display metadata, as the API provides it. */
+export type StageInfo = { stage: Stage; label: string; blurb: string };
+
+export type Roadmap = {
+  items: RoadmapItem[];
+  stages: StageInfo[];
+  teams: string[];
+  /**
+   * false when the API couldn't be reached. The page shows an "unavailable"
+   * state; an API that is up but simply has no items yet is still available.
+   */
+  available: boolean;
 };
 
-export const STAGE_ORDER: Stage[] = ["concept", "alpha", "beta"];
-
-/**
- * Today the only thing on the roadmap is the Flagon platform itself: a
- * multi-tenant home where people define and manage their products and teams,
- * kept in sync with the external systems those definitions already live in.
- */
-export const ROADMAP: RoadmapItem[] = [
-  {
-    stage: "concept",
-    team: "Engineering",
-    tag: "Foundation",
-    title: "The Flagon platform",
-    summary:
-      "The foundation everything else builds on: a multi-tenant home where people define and manage their products and teams, kept in sync with the systems those definitions already live in.",
-    includes: [
-      "Multi-tenant from the first commit",
-      "Products and teams as first-class objects",
-      "Ownership, membership, and access control",
-      "Bidirectional sync with external systems",
-      "A public API, SDKs, and a CLI",
-    ],
-  },
-];
-
-/** Distinct teams present on the board, for the filter. */
-export function roadmapTeams(): string[] {
-  return [...new Set(ROADMAP.map((i) => i.team))].sort();
+/** The whole board in one request. Uses ISR (revalidate) so a good response is
+ * cached and reused; when the API can't be reached, `available` is false. */
+export async function getRoadmap(): Promise<Roadmap> {
+  const res = await apiJson<Partial<Roadmap>>("/roadmap");
+  if (!res.ok) return { items: [], stages: [], teams: [], available: false };
+  return {
+    items: res.data.items ?? [],
+    stages: res.data.stages ?? [],
+    teams: res.data.teams ?? [],
+    available: true,
+  };
 }
