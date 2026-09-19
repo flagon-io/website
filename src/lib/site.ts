@@ -4,6 +4,7 @@ import {
   Boxes,
   Briefcase,
   Building2,
+  Component,
   FlaskConical,
   Handshake,
   Info,
@@ -27,6 +28,8 @@ const links = {
   repo: "https://github.com/flagon-io/website",
   /** The product app, on its own subdomain. */
   app: "https://app.flagon.io",
+  /** Flagon UI, the design system, on its own subdomain. Open source, free to use. */
+  ui: "https://ui.flagon.io",
   /** Where every "Start for free" CTA points. */
   signup: "https://app.flagon.io/signup",
   discord: "https://discord.gg/dtYQs6rPXN",
@@ -42,7 +45,10 @@ export type NavLink = {
   icon?: IconType;
 };
 /** A dropdown: sections of links, rendered with a divider between sections. */
-export type NavGroup = { label: string; sections: readonly (readonly NavLink[])[] };
+export type NavGroup = {
+  label: string;
+  sections: readonly (readonly NavLink[])[];
+};
 export type NavItem = NavLink | NavGroup;
 
 /**
@@ -58,7 +64,13 @@ const nav: readonly NavItem[] = [
     sections: [
       [
         { label: "Blog", href: "/blog", icon: Newspaper },
-        { label: "Discord", href: links.discord, external: true, icon: SiDiscord },
+        { label: "Flagon UI", href: links.ui, external: true, icon: Component },
+        {
+          label: "Discord",
+          href: links.discord,
+          external: true,
+          icon: SiDiscord,
+        },
         { label: "GitHub", href: links.github, external: true, icon: SiGithub },
       ],
     ],

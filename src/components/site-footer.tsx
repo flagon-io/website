@@ -22,9 +22,13 @@ export function SiteFooter() {
             className="inline-flex items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-brand"
           >
             <Logo className="h-6 w-6 text-foreground" />
-            <span className="text-[15px] font-semibold tracking-tight">Flagon</span>
+            <span className="text-[15px] font-semibold tracking-tight">
+              Flagon
+            </span>
           </Link>
-          <p className="mt-3 max-w-xs text-sm text-muted-foreground">{site.tagline}</p>
+          <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+            {site.tagline}
+          </p>
           <div className="mt-4 flex items-center gap-3">
             <a
               href={site.links.github}
@@ -51,6 +55,9 @@ export function SiteFooter() {
           <FooterLink href="/products">Products</FooterLink>
           <FooterLink href="/pricing">Pricing</FooterLink>
           <FooterLink href="/docs">Docs</FooterLink>
+          <FooterLink href={site.links.ui} external>
+            Flagon UI
+          </FooterLink>
         </FooterCol>
 
         <FooterCol title="Company">
@@ -90,10 +97,18 @@ export function SiteFooter() {
   );
 }
 
-function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
+function FooterCol({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <p className="font-mono text-[11px] uppercase tracking-widest text-subtle">{title}</p>
+      <p className="font-mono text-[11px] uppercase tracking-widest text-subtle">
+        {title}
+      </p>
       <ul className="mt-4 flex flex-col gap-2.5">{children}</ul>
     </div>
   );

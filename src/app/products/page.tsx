@@ -5,6 +5,7 @@ import { FlagonPour } from "@/components/flagon-pour";
 import { Schematic, SchematicGrid } from "@/components/schematic";
 import { Section, SectionHeader } from "@/components/section";
 import { Cta } from "@/components/cta";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -24,6 +25,21 @@ const PILLARS: { title: string; body: string }[] = [
   {
     title: "One surface, everywhere",
     body: "The dashboard, the assistant, the API, and MCP all drive the same permission-checked operations. Click it, ask it, script it, or point an agent at it.",
+  },
+];
+
+const UI_POINTS: { title: string; body: string }[] = [
+  {
+    title: "Accessible by default",
+    body: "Built on Radix primitives: keyboard and screen-reader ready out of the box, so you inherit the accessibility work instead of redoing it.",
+  },
+  {
+    title: "The real thing",
+    body: "The same components Flagon itself is built from, not a stripped-down sample. What you see running the product is what you get.",
+  },
+  {
+    title: "Yours to use",
+    body: "Open source and free. Install it, theme it, and build your own interface with it, whether or not you ever touch the rest of Flagon.",
   },
 ];
 
@@ -61,9 +77,9 @@ export default function ProductsPage() {
           </h1>
           <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Flagon brings your tools into one place you can operate and reason
-            about, with AI there when you want it. Connect your system, understand
-            what&rsquo;s happening across it, and act on it, from the dashboard,
-            the API, or an AI assistant.
+            about, with AI there when you want it. Connect your system,
+            understand what&rsquo;s happening across it, and act on it, from the
+            dashboard, the API, or an AI assistant.
           </p>
           <div className="mt-9 flex flex-col items-center gap-3 sm:flex-row">
             <Cta href="/docs">Explore the docs</Cta>
@@ -83,8 +99,12 @@ export default function ProductsPage() {
             <SchematicGrid cols={3}>
               {PILLARS.map((p) => (
                 <div key={p.title} className="p-6 sm:p-8">
-                  <h3 className="text-base font-semibold tracking-tight">{p.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
+                  <h3 className="text-base font-semibold tracking-tight">
+                    {p.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {p.body}
+                  </p>
                 </div>
               ))}
             </SchematicGrid>
@@ -101,12 +121,46 @@ export default function ProductsPage() {
             <SchematicGrid cols={4}>
               {TRAITS.map((t) => (
                 <div key={t.title} className="p-6 sm:p-8">
-                  <h3 className="text-base font-semibold tracking-tight">{t.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.body}</p>
+                  <h3 className="text-base font-semibold tracking-tight">
+                    {t.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {t.body}
+                  </p>
                 </div>
               ))}
             </SchematicGrid>
           </Schematic>
+        </Section>
+
+        {/* Flagon UI: a shipped, standalone product of its own. */}
+        <Section divider>
+          <SectionHeader
+            title="Flagon UI, a product of its own"
+            lead="Flagon's interface is built on Flagon UI, our open-source design system of accessible, Radix-based React components. It ships as its own product on its own site, so you can build with the same pieces Flagon is made from."
+          />
+          <Schematic bleed className="mt-10">
+            <SchematicGrid cols={3}>
+              {UI_POINTS.map((p) => (
+                <div key={p.title} className="p-6 sm:p-8">
+                  <h3 className="text-base font-semibold tracking-tight">
+                    {p.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                    {p.body}
+                  </p>
+                </div>
+              ))}
+            </SchematicGrid>
+          </Schematic>
+          <div className="mt-8 flex flex-col items-center gap-3 px-6 sm:flex-row sm:px-8">
+            <Cta href={site.links.ui} external>
+              Explore Flagon UI
+            </Cta>
+            <Cta href="/docs/get-started/introduction" variant="secondary">
+              Read the docs
+            </Cta>
+          </div>
         </Section>
 
         {/* CTA */}

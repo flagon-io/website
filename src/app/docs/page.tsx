@@ -240,6 +240,15 @@ export default async function DocsPage() {
                 Handbook
               </Link>
               <a
+                href={site.links.ui}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-link transition hover:text-brand"
+              >
+                Flagon UI
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+              </a>
+              <a
                 href={site.links.github}
                 target="_blank"
                 rel="noreferrer"

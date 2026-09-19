@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { buttonClasses } from "@/components/button";
+import { site } from "@/lib/site";
 
 /**
  * Shown when the docs API can't be reached (down, or not deployed yet). Honest
@@ -29,7 +30,7 @@ export function DocsUnavailable() {
             Docs home
           </Link>
           <a
-            href="https://ui.flagon.io"
+            href={site.links.ui}
             className={buttonClasses({ variant: "secondary", size: "lg" })}
           >
             Flagon UI
