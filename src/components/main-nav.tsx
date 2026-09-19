@@ -1,5 +1,6 @@
 "use client";
 
+import type { PointerEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
@@ -9,9 +10,18 @@ import { site, isNavGroup, type NavLink } from "@/lib/site";
 
 /**
  * The desktop top navigation, built on Radix NavigationMenu: direct links plus
- * hover/keyboard-openable dropdown groups. Radix owns the a11y contract (roles,
+ * click/keyboard-openable dropdown groups. Radix owns the a11y contract (roles,
  * aria-expanded, arrow-key roving, Escape, focus that does not jump on hover).
+ *
+ * Hover-to-open is suppressed so adjacent groups don't fight each other as the
+ * pointer crosses them: Radix composes our pointer handlers before its own, so
+ * calling preventDefault() on the hover events cancels its open-on-hover while
+ * leaving click and keyboard activation untouched.
  */
+const preventHover = (e: PointerEvent) => {
+  if (e.pointerType === "mouse") e.preventDefault();
+};
+
 export function MainNav({ className }: { className?: string }) {
   const pathname = usePathname();
 
@@ -29,6 +39,8 @@ export function MainNav({ className }: { className?: string }) {
             return (
               <NavigationMenu.Item key={item.label} className="relative">
                 <NavigationMenu.Trigger
+                  onPointerMove={preventHover}
+                  onPointerLeave={preventHover}
                   className={cn(
                     "group flex items-center gap-1 text-sm outline-none transition-colors focus-visible:text-foreground",
                     active
@@ -43,7 +55,11 @@ export function MainNav({ className }: { className?: string }) {
                     aria-hidden
                   />
                 </NavigationMenu.Trigger>
-                <NavigationMenu.Content className="absolute left-0 top-full z-30 pt-2.5">
+                <NavigationMenu.Content
+                  onPointerEnter={preventHover}
+                  onPointerLeave={preventHover}
+                  className="absolute left-0 top-full z-30 pt-2.5"
+                >
                   <div className="min-w-52 rounded-lg border border-hairline bg-popover p-1.5 shadow-xl shadow-black/10">
                     {item.sections.map((section, si) => (
                       <div
