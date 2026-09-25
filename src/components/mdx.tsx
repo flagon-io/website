@@ -1,11 +1,29 @@
-import type { ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Info,
+  Lightbulb,
+  OctagonAlert,
+  Sparkles,
+  StickyNote,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/cn";
+import { TabsClient } from "@/components/mdx-tabs";
 import { CompCalculator } from "@/components/comp-calculator";
 import {
   MarkTreatments,
@@ -16,28 +34,219 @@ import {
   MarkUsage,
 } from "@/components/brand-blocks";
 
-/** Callout box usable inside MDX: <Callout>…</Callout> or type="warn". */
+type CalloutType = "note" | "info" | "tip" | "warn" | "danger" | "brand";
+
+const CALLOUTS: Record<
+  CalloutType,
+  { icon: LucideIcon; label: string; box: string; icon_: string }
+> = {
+  note: {
+    icon: StickyNote,
+    label: "Note",
+    box: "border-hairline bg-panel",
+    icon_: "text-subtle",
+  },
+  info: {
+    icon: Info,
+    label: "Info",
+    box: "border-sky-500/30 bg-sky-500/5",
+    icon_: "text-sky-600 dark:text-sky-400",
+  },
+  tip: {
+    icon: Lightbulb,
+    label: "Tip",
+    box: "border-emerald-500/30 bg-emerald-500/5",
+    icon_: "text-emerald-600 dark:text-emerald-400",
+  },
+  warn: {
+    icon: TriangleAlert,
+    label: "Warning",
+    box: "border-amber-500/35 bg-amber-500/5",
+    icon_: "text-amber-600 dark:text-amber-400",
+  },
+  danger: {
+    icon: OctagonAlert,
+    label: "Danger",
+    box: "border-destructive/40 bg-destructive/5",
+    icon_: "text-destructive",
+  },
+  brand: {
+    icon: Sparkles,
+    label: "Flagon",
+    box: "border-brand/40 bg-brand/5",
+    icon_: "text-brand",
+  },
+};
+
+/**
+ * Callout box usable inside MDX: <Callout>...</Callout>, or with a type
+ * (note | info | tip | warn | danger | brand) and an optional title. Each type
+ * carries its own icon so the kind reads without relying on color alone.
+ */
 function Callout({
   children,
   type = "note",
   title,
 }: {
   children: ReactNode;
-  type?: "note" | "warn" | "brand";
+  type?: CalloutType;
   title?: string;
 }) {
-  const tone =
-    type === "warn"
-      ? "border-destructive/40 bg-destructive/5"
-      : type === "brand"
-        ? "border-brand/40 bg-brand/5"
-        : "border-hairline bg-panel";
+  const c = CALLOUTS[type] ?? CALLOUTS.note;
+  const Icon = c.icon;
   return (
-    <div className={cn("my-6 rounded-lg border p-4 text-sm leading-relaxed", tone)}>
-      {title ? <p className="mb-1 font-semibold text-foreground">{title}</p> : null}
-      <div className="text-muted-foreground [&>p]:m-0">{children}</div>
+    <div
+      role="note"
+      aria-label={title ?? c.label}
+      className={cn(
+        "my-6 flex gap-3 rounded-lg border px-4 py-3.5 text-sm leading-relaxed",
+        c.box,
+      )}
+    >
+      <Icon
+        className={cn("mt-0.5 h-4 w-4 shrink-0", c.icon_)}
+        strokeWidth={2}
+        aria-hidden
+      />
+      <div className="min-w-0 flex-1">
+        {title ? (
+          <div className="mb-1 font-semibold text-foreground">{title}</div>
+        ) : null}
+        <div className="text-muted-foreground [&_p]:m-0 [&>*+*]:mt-2! [&_pre]:my-2">
+          {children}
+        </div>
+      </div>
     </div>
   );
+}
+
+/** A grid of linked cards: <Cards><Card title href description /></Cards>. */
+function Cards({ children }: { children: ReactNode }) {
+  return (
+    <div className="my-6 grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div>
+  );
+}
+
+function Card({
+  title,
+  href,
+  description,
+  children,
+}: {
+  title: string;
+  href: string;
+  description?: string;
+  children?: ReactNode;
+}) {
+  const external = /^https?:\/\//.test(href);
+  const Arrow = external ? ArrowUpRight : ArrowRight;
+  const body = (
+    <>
+      <span className="flex items-start justify-between gap-3">
+        <span className="font-medium tracking-tight text-foreground transition-colors group-hover:text-brand">
+          {title}
+        </span>
+        <Arrow
+          className="mt-0.5 h-4 w-4 shrink-0 text-subtle transition group-hover:translate-x-0.5 group-hover:text-brand"
+          strokeWidth={2}
+          aria-hidden
+        />
+      </span>
+      {description || children ? (
+        <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground [&_p]:m-0">
+          {description ?? children}
+        </span>
+      ) : null}
+    </>
+  );
+  const className =
+    "group block rounded-lg border border-hairline bg-card p-4 no-underline! outline-none transition hover:border-mark hover:bg-panel focus-visible:ring-2 focus-visible:ring-brand";
+  return external ? (
+    <a href={href} target="_blank" rel="noreferrer" className={className}>
+      {body}
+    </a>
+  ) : (
+    <Link href={href} className={className}>
+      {body}
+    </Link>
+  );
+}
+
+/** Numbered vertical steps: <Steps><Step title="...">body</Step></Steps>. */
+function Steps({ children }: { children: ReactNode }) {
+  const steps = Children.toArray(children).filter(isValidElement);
+  return (
+    <ol className="my-8 ml-0! list-none! p-0">
+      {steps.map((step, i) =>
+        cloneElement(step as ReactElement<StepProps>, {
+          n: i + 1,
+          last: i === steps.length - 1,
+        }),
+      )}
+    </ol>
+  );
+}
+
+type StepProps = {
+  title?: string;
+  children?: ReactNode;
+  n?: number;
+  last?: boolean;
+};
+
+function Step({ title, children, n = 1, last = false }: StepProps) {
+  return (
+    <li className="relative mt-0! flex gap-4 pb-8 last:pb-0">
+      {!last ? (
+        <span
+          aria-hidden
+          className="absolute bottom-0 left-3.5 top-9 w-px -translate-x-1/2 bg-mark"
+        />
+      ) : null}
+      <span
+        aria-hidden
+        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-hairline bg-panel font-mono text-xs font-medium tabular-nums text-foreground"
+      >
+        {n}
+      </span>
+      <div className="min-w-0 flex-1 pt-0.5">
+        {title ? (
+          <div className="font-semibold tracking-tight text-foreground">
+            <span className="sr-only">Step {n}: </span>
+            {title}
+          </div>
+        ) : null}
+        <div className="mt-2 [&>*+*]:mt-4 [&>*:first-child]:mt-0">
+          {children}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * Tabs: <Tabs><Tab title="Dashboard">...</Tab><Tab title="API">...</Tab></Tabs>.
+ * Every panel is rendered here on the server; the small client component only
+ * switches which one shows.
+ */
+function Tabs({ children }: { children: ReactNode }) {
+  const tabs = Children.toArray(children).filter(
+    (c): c is ReactElement<{ title?: string; children?: ReactNode }> =>
+      isValidElement(c) &&
+      typeof (c.props as { title?: unknown }).title === "string",
+  );
+  if (tabs.length === 0) return null;
+  return (
+    <TabsClient
+      titles={tabs.map((t) => t.props.title as string)}
+      panels={tabs.map((t) => t.props.children)}
+    />
+  );
+}
+
+/** One tab of a <Tabs> group; its title labels the tab. */
+function Tab({ children }: { title: string; children?: ReactNode }) {
+  return <>{children}</>;
 }
 
 /** Internal links go through next/link; external links open in a new tab. */
@@ -60,6 +269,12 @@ function Anchor({ href = "", children, ...props }: React.ComponentProps<"a">) {
 const components = {
   a: Anchor,
   Callout,
+  Cards,
+  Card,
+  Steps,
+  Step,
+  Tabs,
+  Tab,
   CompCalculator,
   MarkTreatments,
   MarkSizes,

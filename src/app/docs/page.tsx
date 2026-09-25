@@ -12,7 +12,13 @@ import { SiGithub, SiDiscord } from "@icons-pack/react-simple-icons";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { buttonClasses } from "@/components/button";
-import { getProductDocsBySection } from "@/lib/docs";
+import { DocView } from "@/components/doc-view";
+import {
+  DOCS_INDEX_SLUG,
+  getDoc,
+  getDocsNav,
+  getProductDocsBySection,
+} from "@/lib/docs";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -48,7 +54,22 @@ const PROMPTS = [
   "Which members have admin on this org?",
 ];
 
+/**
+ * The docs landing. It is docs/index.mdx from the corpus, rendered like any
+ * other doc (sidebar, TOC, MDX components), so the landing is written and
+ * reviewed alongside the rest of the docs. If the API is unreachable, or
+ * predates the index page, the hand-built landing below stands in.
+ */
 export default async function DocsPage() {
+  const [lookup, nav] = await Promise.all([
+    getDoc(DOCS_INDEX_SLUG),
+    getDocsNav(),
+  ]);
+  if (lookup.state === "ok") return <DocView doc={lookup.doc} nav={nav} />;
+  return <DocsLandingFallback />;
+}
+
+async function DocsLandingFallback() {
   const all = await getProductDocsBySection();
   const grid = all.filter((g) => g.section.toLowerCase() !== "open source");
 

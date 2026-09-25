@@ -156,7 +156,9 @@ export async function getProductDocsBySection(): Promise<
   return (await getDocsBySection())
     .map((g) => ({
       ...g,
-      docs: g.docs.filter((d) => !d.slug.startsWith("handbook/")),
+      docs: g.docs.filter(
+        (d) => !d.slug.startsWith("handbook/") && d.slug !== DOCS_INDEX_SLUG,
+      ),
     }))
     .filter((g) => g.docs.length > 0)
     .sort(
@@ -164,4 +166,94 @@ export async function getProductDocsBySection(): Promise<
         sectionRank(a.section) - sectionRank(b.section) ||
         a.section.localeCompare(b.section),
     );
+}
+
+/** Slug of the docs landing page (docs/index.mdx), rendered at /docs. */
+export const DOCS_INDEX_SLUG = "index";
+
+export type DocsNavPage = {
+  type: "page";
+  slug: string;
+  title: string;
+  status?: string;
+};
+export type DocsNavSeparator = { type: "separator"; title: string };
+export type DocsNavItem = DocsNavPage | DocsNavSeparator;
+
+export type DocsNavSection = {
+  /** Top-level docs folder; every page slug in it starts with `<folder>/`. */
+  folder: string;
+  title: string;
+  items: DocsNavItem[];
+};
+
+export type DocsNavGroup = {
+  /** Group heading ("Get started"). Empty for the ungrouped fallback. */
+  title: string;
+  sections: DocsNavSection[];
+};
+
+/** The grouped docs navigation, as compiled from the meta.json files. */
+export type DocsNav = {
+  index?: DocsNavPage;
+  groups: DocsNavGroup[];
+};
+
+/**
+ * The docs navigation. Reads the API's compiled nav (GET /docs/nav); when the
+ * API predates that route, falls back to the flat section list so the sidebar
+ * still renders (one ungrouped run of sections, the previous behavior).
+ */
+export async function getDocsNav(): Promise<DocsNav> {
+  const res = await apiJson<{ nav?: DocsNav }>("/docs/nav", {
+    cache: "no-store",
+  });
+  if (res.ok && res.data.nav && Array.isArray(res.data.nav.groups)) {
+    return res.data.nav;
+  }
+  const sections = await getProductDocsBySection();
+  return {
+    groups: [
+      {
+        title: "",
+        sections: sections.map((s) => ({
+          folder: s.docs[0]?.slug.split("/")[0] ?? s.section,
+          title: s.section,
+          items: s.docs.map((d) => ({
+            type: "page" as const,
+            slug: d.slug,
+            title: d.title,
+            status: d.status,
+          })),
+        })),
+      },
+    ],
+  };
+}
+
+/** A page in reading order, with where it sits in the nav. */
+export type DocsNavEntry = DocsNavPage & {
+  group?: string;
+  section?: string;
+};
+
+/** Every page in nav reading order: the landing page, then each section's. */
+export function flattenDocsNav(nav: DocsNav): DocsNavEntry[] {
+  const out: DocsNavEntry[] = [];
+  if (nav.index) out.push(nav.index);
+  for (const g of nav.groups) {
+    for (const s of g.sections) {
+      for (const it of s.items) {
+        if (it.type === "page") {
+          out.push({ ...it, group: g.title || undefined, section: s.title });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/** URL of a docs page; the landing page lives at /docs itself. */
+export function docHref(slug: string): string {
+  return slug === DOCS_INDEX_SLUG ? "/docs" : `/docs/${slug}`;
 }

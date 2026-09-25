@@ -453,3 +453,37 @@ label[for] {
 .dark .prose code[data-theme] span {
   color: var(--shiki-dark);
 }
+
+/*
+ * Plain-text diagrams (```text blocks drawn with box-drawing characters). The
+ * brand mono face ships only Latin glyphs, so box-drawing characters would fall
+ * back to another font with different metrics and the boxes would not line up.
+ * These blocks use a system mono stack whose first available face carries the
+ * full box-drawing and arrow set, with ligatures off, no wrapping (scroll
+ * instead), and a tight line-height so vertical strokes join across lines.
+ */
+.prose pre[data-language="text"],
+.prose pre[data-language="text"] code {
+  font-family: "Cascadia Mono", Consolas, Menlo, "DejaVu Sans Mono",
+    "Liberation Mono", "Noto Sans Mono", ui-monospace, monospace;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  tab-size: 2;
+}
+.prose pre[data-language="text"] {
+  overflow-x: auto;
+  padding: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+}
+
+/* Long inline code (URLs, paths) wraps instead of overflowing narrow columns
+ * such as tab panels and steps on a phone. `break-word`, not `anywhere`: it only
+ * breaks a word that can't fit on its own line and leaves min-content widths
+ * alone, so table columns still size to their words (`owner`, not `owne|r`). */
+.prose :not(pre) > code {
+  overflow-wrap: break-word;
+}
